@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PictoComunica Pro — Portada</title>
+  <meta name="theme-color" content="#2563eb"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+
+  <style>
+    :root{
+      --bg:#ffffff; --card:#ffffff; --text:#0b1220; --muted:#475569;
+      --primary:#2563eb; --accent:#10b981; --border:#e2e8f0; --focus:#93c5fd;
+      --topbar:60px; --rail:180px; --gap:10px;
+      --chip1:#e0f2fe; --chip2:#f1f5f9; --chip3:#fff7ed; --chip4:#ecfeff;
+      --chip5:#fef3c7; --chip6:#fce7f3; --chip7:#f0fdf4; --chip8:#ede9fe;
+    }
+    [data-theme="dark"]{
+      --bg:#0f172a; --card:#0b1220; --text:#f8fafc; --muted:#cbd5e1;
+      --primary:#60a5fa; --accent:#22c55e; --border:#1f2937; --focus:#60a5fa;
+      --chip1:#0b3a5e; --chip2:#0f172a; --chip3:#3b2f1a; --chip4:#063a3a;
+      --chip5:#3a2d09; --chip6:#4a1030; --chip7:#102a12; --chip8:#231942;
+    }
+    [data-theme="contrast"]{
+      --bg:#ffffff; --card:#ffffff; --text:#000; --muted:#111;
+      --primary:#000; --accent:#000; --border:#000; --focus:#000;
+      --chip1:#fff; --chip2:#fff; --chip3:#fff; --chip4:#fff; --chip5:#fff; --chip6:#fff; --chip7:#fff; --chip8:#fff;
+    }
+    [data-theme="pastel"]{
+      --bg:#fbfdff; --card:#ffffff; --text:#102a43; --muted:#486581;
+      --primary:#7c3aed; --accent:#22c55e; --border:#e6effa; --focus:#c4b5fd;
+      --chip1:#e9d5ff; --chip2:#ffe4e6; --chip3:#fef9c3; --chip4:#dcfce7;
+      --chip5:#e0f2fe; --chip6:#fde68a; --chip7:#f5d0fe; --chip8:#cffafe;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);
+         font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; overflow-x:hidden}
+
+    /* Topbar */
+    .topbar{
+      position:fixed; inset:0 0 auto 0; height:var(--topbar);
+      z-index:70; background:linear-gradient(90deg,var(--primary),#1e3a8a);
+      color:#fff; display:flex; align-items:center; box-shadow:0 2px 8px rgb(0 0 0/12%);
+    }
+    .toprow{max-width:1400px; margin:0 auto; width:100%; padding:8px 12px; display:flex; gap:8px; align-items:center}
+    .brand{display:flex; gap:10px; align-items:center; font-weight:900}
+    .logo{width:36px;height:36px;border-radius:10px;background:#fff;color:#1e3a8a;display:grid;place-items:center;font-weight:900}
+    .topbtn{border:none;border-radius:10px;background:rgb(255 255 255 / 14%); padding:10px 14px; color:#fff; font-weight:800; cursor:pointer}
+    .topbtn.primary{background:rgb(255 255 255 / 18%)}
+    .topbtn.success{background:#16a34a}
+    .spacer{flex:1}
+
+    /* Layout */
+    .layout{
+      max-width:1400px; margin: calc(var(--topbar) + 12px) auto 14px;
+      padding: 0 10px; display:grid; grid-template-columns:var(--rail) 1fr; gap:var(--gap);
+    }
+    .layout > * { min-width:0; }
+    @media (max-width:960px){ :root{ --rail:100% } .layout{ grid-template-columns:1fr } }
+
+    /* Sidebar */
+    .sidebar{
+      background:var(--card); border:1px solid var(--border); border-radius:14px; padding:10px;
+      height:max-content; position: sticky; top: calc(var(--topbar) + 10px);
+      min-width:0; overflow:hidden; z-index:80;
+    }
+    .sectionTitle{margin:6px 0 8px; color:var(--muted); font-weight:900; font-size:12px; letter-spacing:.3px}
+    .seclist{display:flex; flex-direction:column; gap:8px}
+    .chip{
+      width:100%; display:grid; grid-template-columns:28px 1fr; gap:8px; align-items:center;
+      padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--card);
+      cursor:pointer; font-weight:900; font-size:13px; transition:transform .06s ease;
+      white-space:normal; word-break:break-word;
+    }
+    .chip:hover{ transform:translateY(-1px) }
+    .chip .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px}
+    .c1{ background:var(--chip1) } .c2{ background:var(--chip2) } .c3{ background:var(--chip3) } .c4{ background:var(--chip4) }
+    .c5{ background:var(--chip5) } .c6{ background:var(--chip6) } .c7{ background:var(--chip7) } .c8{ background:var(--chip8) }
+
+    /* Sidebar como drawer en móvil */
+    @media (max-width:960px){
+      .sidebar{
+        position:fixed; left:0; top:var(--topbar); bottom:0; width:280px;
+        transform:translateX(-100%); transition:transform .25s ease; box-shadow:2px 0 18px rgb(0 0 0/18%);
+      }
+      .sidebar.open{ transform:translateX(0) }
+    }
+
+    /* Main */
+    .main{min-height:60vh; min-width:0}
+
+    .grid{ display:grid; gap:8px }
+    #panelGrid{ grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); }
+    @media (min-width:1200px){ #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); } }
+    @media (max-width:960px){  #panelGrid{ grid-template-columns:repeat(6,minmax(0,1fr)); } }
+    @media (max-width:640px){  #panelGrid{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:10px;
+      min-height:92px; padding:6px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+    }
+    .picto{ width:75px; height:75px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }
+    .picto img{ width:100%; height:100%; object-fit:contain }
+    .lbl{ font-size:10px; line-height:1.1; font-weight:800; color:var(--text) }
+
+    .phrase{
+      display:flex; flex-wrap:wrap; gap:6px; min-height:46px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:12px; padding:8px; margin:8px 0 14px;
+    }
+
+    .picto.bg-blue-pastel   { background-color:#7ec1e4; }
+    .picto.bg-yellow-light  { background-image:linear-gradient(45deg,#FFD93D,#FFB347); }
+    .picto.bg-green-pastel  { background-color:#43fb55; }
+    .picto.bg-orange        { background-color:#f6ba85; }
+    .picto.bg-pink-pastel   { background-color:#f4878f; }
+    .picto.bg-light-blue    { background-color:#48b4cf; }
+    .picto.bg-light-green   { background-color:#72cf44; }
+    .picto.bg-turquoise     { background-color:#44dfd5; }
+    .picto.bg-coral-light   { background-color:#f6c170; }
+    .picto.bg-mint          { background-color:#ff3c23db; }
+    .picto.bg-light-purple  { background-color:#e47474; }
+    .picto.btn-dont-want    { background-color:#f0f0f0; }
+
+    /* Drawer Config */
+    .drawer{
+      position:fixed; top:var(--topbar); right:0; width:320px; height:calc(100% - var(--topbar));
+      background:var(--card); border-left:1px solid var(--border); box-shadow:-6px 0 24px rgb(0 0 0 / 10%);
+      transform:translateX(100%); transition:transform .25s ease; z-index:75; display:flex; flex-direction:column;
+    }
+    .drawer.open{ transform:translateX(0) }
+    .drawer h3{ margin:12px; font-size:16px }
+    .drawer .content{ padding:0 12px 12px; overflow:auto; display:grid; gap:10px }
+    .ctrl label{ display:block; font-size:12px; color:var(--muted); margin-bottom:4px; font-weight:700 }
+    .ctrl input[type="range"], .ctrl select{ width:100%; }
+    .radio-row{ display:flex; flex-wrap:wrap; gap:8px }
+    .radio-row label{ display:flex; align-items:center; gap:6px; padding:6px 8px; border:1px solid var(--border); border-radius:999px; cursor:pointer; font-size:12px; font-weight:700 }
+    .drawer .foot{ margin-top:auto; padding:10px 12px; border-top:1px solid var(--border); display:flex; gap:8px }
+    .btn{ border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:10px; padding:8px 10px; font-weight:800; cursor:pointer }
+    .btn.primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
+    .btn.ghost{ background:transparent }
+
+    /* Toggles laterales */
+    .toggle{
+      position:fixed; top:50%; transform:translateY(-50%);
+      z-index:76; background:var(--primary); color:#fff; border:none; border-radius:10px 0 0 10px;
+      width:38px; height:78px; cursor:pointer; box-shadow:-2px 2px 10px rgb(0 0 0 / 18%); font-size:16px; font-weight:900;
+    }
+    .toggle.right{ right:0 }
+    .toggle.left{ left:0; border-radius:0 10px 10px 0; display:none }
+    @media (max-width:960px){ .toggle.left{ display:block } }
+    .toggle span{ display:block }
+
+    /* Modal */
+    .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgb(0 0 0 / 40%); z-index:90 }
+    .modal.open{ display:grid }
+    .sheet{
+      width:min(980px, 96vw); max-height:80vh; overflow:auto;
+      background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px;
+      box-shadow:0 12px 40px rgb(0 0 0 / 30%);
+    }
+    .sheetHead{ display:flex; align-items:center; gap:10px; margin-bottom:8px }
+    .sheetHead h3{ margin:0; font-size:18px }
+    .closeX{ margin-left:auto; border:1px solid var(--border); background:var(--card); border-radius:10px; padding:6px 10px; cursor:pointer; font-weight:800 }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar" role="banner">
+    <div class="toprow">
+      <div class="brand"><div class="logo">PC</div> PictoComunica Pro</div>
+      <button class="topbtn primary" id="playBtn">▶ Reproducir</button>
+      <button class="topbtn" id="clearBtn">🗑 Borrar</button>
+      <div class="spacer"></div>
+      <button class="topbtn success" id="installBtn" title="Instalar la aplicación" hidden>Instalar</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout" role="main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Secciones" id="sidebar">
+      <div class="sectionTitle">Secciones</div>
+      <div class="seclist">
+        <button class="chip"><div class="ico c1">🏠</div> Panel</button>
+        <button class="chip"><div class="ico c5">🗓️</div> Rutinas</button>
+        <button class="chip"><div class="ico c7">🔢</div> Números</button>
+        <button class="chip"><div class="ico c6">🔤</div> Letras</button>
+        <button class="chip"><div class="ico c8">👨‍👩‍👧</div> Familia</button>
+        <button class="chip"><div class="ico c3">🧘</div> Autorregulación</button>
+        <button class="chip"><div class="ico c2">🎮</div> Juego</button>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <section class="main">
+      <!-- Barra de frase -->
+      <div id="phraseBar" class="phrase" aria-live="polite"></div>
+      <!-- Panel -->
+      <div class="grid" id="panelGrid" aria-label="Panel principal"></div>
+    </section>
+  </div>
+
+  <!-- Toggles laterales -->
+  <button class="toggle left"  id="leftToggle"  aria-controls="sidebar"      aria-expanded="false" title="Abrir secciones">❯</button>
+  <button class="toggle right" id="rightToggle" aria-controls="configDrawer" aria-expanded="false" title="Abrir configuración">❮</button>
+
+  <!-- Drawer Config -->
+  <aside id="configDrawer" class="drawer" aria-label="Configuración">
+    <h3>⚙️ Configuración</h3>
+    <div class="content">
+      <div class="ctrl">
+        <label for="voiceSelect">Voz / Idioma</label>
+        <select id="voiceSelect"></select>
+      </div>
+      <div class="ctrl">
+        <label for="rate">Velocidad</label>
+        <input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1">
+      </div>
+      <div class="ctrl">
+        <label for="pitch">Tono</label>
+        <input id="pitch" type="range" min="0.8" max="1.2" step="0.05" value="1">
+      </div>
+      <div class="ctrl">
+        <label for="volume">Volumen</label>
+        <input id="volume" type="range" min="0.1" max="1" step="0.05" value="1">
+      </div>
+      <div class="ctrl">
+        <label>Tema</label>
+        <div class="radio-row" id="themeRow">
+          <label><input type="radio" name="theme" value="light" checked> Claro</label>
+          <label><input type="radio" name="theme" value="dark"> Oscuro</label>
+          <label><input type="radio" name="theme" value="contrast"> Alto contraste</label>
+          <label><input type="radio" name="theme" value="pastel"> Pastel</label>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="resetBtn">Restablecer</button>
+      <button class="btn primary" id="closeDrawer">Listo</button>
+    </div>
+  </aside>
+
+  <!-- Modal genérico (instrucciones / categorías) -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="sheetHead">
+        <h3 id="modalTitle">Seleccionar</h3>
+        <button class="closeX" id="modalClose">✕</button>
+      </div>
+      <div class="grid" id="modalGrid" style="grid-template-columns:repeat(auto-fill,minmax(90px,1fr))"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js', {scope: './'}));
+    }
+  </script>
+</body>
+</html>
