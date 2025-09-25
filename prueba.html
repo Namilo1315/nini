@@ -123,7 +123,7 @@
       border-radius:12px; padding:8px; margin:8px 0 14px;
     }
 
-    /* ===== Colores de pictogramas ===== */
+    /* Colores de pictogramas */
     .picto.bg-blue-pastel   { background-color:#7ec1e4; }
     .picto.bg-yellow-light  { background-image:linear-gradient(45deg,#FFD93D,#FFB347); }
     .picto.bg-green-pastel  { background-color:#43fb55; }
@@ -232,18 +232,37 @@
         <label for="voiceSelect">Voz / Idioma</label>
         <select id="voiceSelect"></select>
       </div>
+
       <div class="ctrl">
         <label for="rate">Velocidad</label>
-        <input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1">
+        <div class="stepper">
+          <button type="button" class="btn" id="rateMinus">−</button>
+          <input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1">
+          <button type="button" class="btn" id="ratePlus">+</button>
+          <div class="val" id="rateVal">1</div>
+        </div>
       </div>
+
       <div class="ctrl">
         <label for="pitch">Tono</label>
-        <input id="pitch" type="range" min="0.8" max="1.2" step="0.05" value="1">
+        <div class="stepper">
+          <button type="button" class="btn" id="pitchMinus">−</button>
+          <input id="pitch" type="range" min="0.8" max="1.2" step="0.05" value="1">
+          <button type="button" class="btn" id="pitchPlus">+</button>
+          <div class="val" id="pitchVal">1</div>
+        </div>
       </div>
+
       <div class="ctrl">
         <label for="volume">Volumen</label>
-        <input id="volume" type="range" min="0.1" max="1" step="0.05" value="1">
+        <div class="stepper">
+          <button type="button" class="btn" id="volumeMinus">−</button>
+          <input id="volume" type="range" min="0.1" max="1" step="0.05" value="1">
+          <button type="button" class="btn" id="volumePlus">+</button>
+          <div class="val" id="volumeVal">1</div>
+        </div>
       </div>
+
       <div class="ctrl">
         <label>Tema</label>
         <div class="radio-row" id="themeRow">
@@ -339,16 +358,15 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.hidden = false;
+      installBtn.hidden = false; // mostrar centrado en móvil
     });
+
     function isStandalone(){
       const mq = window.matchMedia('(display-mode: standalone)').matches;
-      const ios = window.navigator.standalone === true;
+      const ios = window.navigator.standalone === true; // iOS Safari
       return mq || ios;
     }
-    function hideInstall(){
-      installBtn.hidden = true;
-    }
+    function hideInstall(){ installBtn.hidden = true; }
     if (isStandalone()) hideInstall();
 
     installBtn?.addEventListener('click', async () => {
@@ -363,110 +381,132 @@
       }catch{ installBtn.disabled = false; }
     });
     window.addEventListener('appinstalled', () => { hideInstall(); deferredPrompt = null; });
+  </script>
 
-    /* ======== Motor de voz + bindings de controles ======== */
-    (function(){
-      const voiceSelect = document.getElementById('voiceSelect');
-      const rateEl   = document.getElementById('rate');
-      const pitchEl  = document.getElementById('pitch');
-      const volEl    = document.getElementById('volume');
-      const themeRow = document.getElementById('themeRow');
-      const drawer   = document.getElementById('configDrawer');
-      const phraseBar= document.getElementById('phraseBar');
+  <!-- ======== Motor de voz + bindings de controles ======== -->
+  <script>
+  (function(){
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rateEl   = document.getElementById('rate');
+    const pitchEl  = document.getElementById('pitch');
+    const volEl    = document.getElementById('volume');
+    const themeRow = document.getElementById('themeRow');
+    const drawer   = document.getElementById('configDrawer');
+    const phraseBar= document.getElementById('phraseBar');
 
-      const store = {
-        get k(){ return JSON.parse(localStorage.getItem('pc_speech')||'{}'); },
-        set(obj){ localStorage.setItem('pc_speech', JSON.stringify(Object.assign(this.k,obj))); }
-      };
+    const store = {
+      get k(){ return JSON.parse(localStorage.getItem('pc_speech')||'{}'); },
+      set(obj){ localStorage.setItem('pc_speech', JSON.stringify(Object.assign(this.k,obj))); }
+    };
 
-      const SpeechEngine = {
-        voices: [],
-        opts: {
-          voiceURI: store.k.voiceURI || null,
-          rate:  parseFloat(store.k.rate  ?? rateEl?.value ?? 1) || 1,
-          pitch: parseFloat(store.k.pitch ?? pitchEl?.value ?? 1) || 1,
-          volume:parseFloat(store.k.volume?? volEl?.value ?? 1) || 1
-        },
-        refreshVoices(){
-          if(!('speechSynthesis' in window)) return;
-          const raw = window.speechSynthesis.getVoices();
-          const es  = raw.filter(v=>/^es[-_]/i.test(v.lang));
-          const rest= raw.filter(v=>!/^es[-_]/i.test(v.lang));
-          const seen = new Set();
-          this.voices = es.concat(rest).filter(v=>{ if(seen.has(v.voiceURI)) return false; seen.add(v.voiceURI); return true; });
-          if(voiceSelect){
-            const prev = voiceSelect.value;
-            voiceSelect.innerHTML = this.voices.map(v=>`<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`).join('');
-            const want = this.voices.find(v=>v.voiceURI===this.opts.voiceURI) ? this.opts.voiceURI : (this.voices[0]?.voiceURI || '');
-            voiceSelect.value = want; this.opts.voiceURI = want; store.set({voiceURI: want});
-            if(prev && prev!==want){ /* no-op */ }
-          }
-        },
-        speak(text){
-          if(!('speechSynthesis' in window)) return;
-          if(!text) return;
-          window.speechSynthesis.cancel();
-          const u = new SpeechSynthesisUtterance(text);
-          const voice = this.voices.find(v=>v.voiceURI===this.opts.voiceURI);
-          if(voice){ u.voice = voice; u.lang = voice.lang; }
-          else{ u.lang = 'es-AR'; }
-          u.rate = this.opts.rate; u.pitch = this.opts.pitch; u.volume = this.opts.volume;
-          window.speechSynthesis.speak(u);
+    const SpeechEngine = {
+      voices: [],
+      opts: {
+        voiceURI: store.k.voiceURI || null,
+        rate:  parseFloat(store.k.rate  ?? rateEl?.value ?? 1) || 1,
+        pitch: parseFloat(store.k.pitch ?? pitchEl?.value ?? 1) || 1,
+        volume:parseFloat(store.k.volume?? volEl?.value ?? 1) || 1
+      },
+      refreshVoices(){
+        if(!('speechSynthesis' in window)) return;
+        const raw = window.speechSynthesis.getVoices();
+        const es  = raw.filter(v=>/^es[-_]/i.test(v.lang));
+        const rest= raw.filter(v=>!/^es[-_]/i.test(v.lang));
+        const seen = new Set();
+        this.voices = es.concat(rest).filter(v=>{ if(seen.has(v.voiceURI)) return false; seen.add(v.voiceURI); return true; });
+        if(voiceSelect){
+          const prev = voiceSelect.value;
+          voiceSelect.innerHTML = this.voices.map(v=>`<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`).join('');
+          const want = this.voices.find(v=>v.voiceURI===this.opts.voiceURI) ? this.opts.voiceURI : (this.voices[0]?.voiceURI || '');
+          voiceSelect.value = want; this.opts.voiceURI = want; store.set({voiceURI: want});
+          if(prev && prev!==want){ /* no-op */ }
         }
-      };
-
-      if(typeof window.speak !== 'function'){
-        window.speak = (t)=> SpeechEngine.speak(t);
+      },
+      speak(text){
+        if(!('speechSynthesis' in window)) return;
+        if(!text) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        const voice = this.voices.find(v=>v.voiceURI===this.opts.voiceURI);
+        if(voice){ u.voice = voice; u.lang = voice.lang; }
+        else{ u.lang = 'es-AR'; }
+        u.rate = this.opts.rate; u.pitch = this.opts.pitch; u.volume = this.opts.volume;
+        window.speechSynthesis.speak(u);
       }
+    };
 
-      function clamp(n,min,max){ n=parseFloat(n); return Math.min(max, Math.max(min, n)); }
-      function buildStepper(rangeEl, label){
-        if(!rangeEl || rangeEl.dataset.stepper==="1") return;
-        const wrap = document.createElement('div'); wrap.className='stepper';
-        const minus = document.createElement('button'); minus.type='button'; minus.className='btn'; minus.setAttribute('aria-label','Menos '+(label||'')); minus.textContent='−';
-        const plus  = document.createElement('button'); plus.type='button';  plus.className='btn';  plus.setAttribute('aria-label','Más '+(label||''));   plus.textContent='+';
-        const val   = document.createElement('div'); val.className='val'; val.textContent=rangeEl.value;
-        rangeEl.parentNode.insertBefore(wrap, rangeEl);
-        wrap.appendChild(minus); wrap.appendChild(rangeEl); wrap.appendChild(plus); wrap.appendChild(val);
-        rangeEl.dataset.stepper="1";
-        function sync(newVal){ rangeEl.value = newVal; val.textContent = newVal; rangeEl.dispatchEvent(new Event('input', {bubbles:true})); }
-        const min = parseFloat(rangeEl.min||'0'); const max=parseFloat(rangeEl.max||'1.4'); const step=parseFloat(rangeEl.step||'0.05');
-        minus.addEventListener('click', ()=>{ const next = clamp((parseFloat(rangeEl.value)-step).toFixed(2), min, max); sync(next); });
-        plus .addEventListener('click', ()=>{ const next = clamp((parseFloat(rangeEl.value)+step).toFixed(2), min, max); sync(next); });
-        rangeEl.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); minus.click(); } if(e.key==='ArrowRight'||e.key==='ArrowUp'){ e.preventDefault(); plus.click(); } });
-        val.textContent = rangeEl.value;
+    // Hacer global si no existe
+    if(typeof window.speak !== 'function'){
+      window.speak = (t)=> SpeechEngine.speak(t);
+    }
+
+    // Utilidades
+    function clamp(n,min,max){ n=parseFloat(n); return Math.min(max, Math.max(min, n)); }
+    function bindStepper(rangeId, minusId, plusId, valId, min, max, step, label){
+      const range = document.getElementById(rangeId);
+      const minus = document.getElementById(minusId);
+      const plus  = document.getElementById(plusId);
+      const val   = document.getElementById(valId);
+      function sync(v){
+        const num = clamp(parseFloat(v).toFixed(2), min, max);
+        range.value = num;
+        val.textContent = num;
+        range.dispatchEvent(new Event("input",{bubbles:true}));
       }
-      function preview(msg){ if(!drawer || !drawer.classList.contains('open')) return; SpeechEngine.speak(msg||'Ajuste de voz'); }
-
-      buildStepper(rateEl,'velocidad');
-      buildStepper(pitchEl,'tono');
-      buildStepper(volEl,'volumen');
-
-      rateEl?.addEventListener('input', ()=>{ SpeechEngine.opts.rate   = clamp(rateEl.value, 0.7, 1.4); store.set({rate:SpeechEngine.opts.rate}); preview('Velocidad'); });
-      pitchEl?.addEventListener('input',()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); preview('Tono'); });
-      volEl?.addEventListener('input',  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); preview('Volumen'); });
-
-      voiceSelect?.addEventListener('change', ()=>{ SpeechEngine.opts.voiceURI = voiceSelect.value; store.set({voiceURI:voiceSelect.value}); preview('Voz'); });
-
-      if('speechSynthesis' in window){
-        SpeechEngine.refreshVoices();
-        window.speechSynthesis.onvoiceschanged = ()=> SpeechEngine.refreshVoices();
-      }
-
-      const savedTheme = localStorage.getItem('pc_theme');
-      if(savedTheme){
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        const radio = themeRow?.querySelector(`input[value="${savedTheme}"]`);
-        if(radio) radio.checked = true;
-      }
-      themeRow?.addEventListener('change', (e)=>{ const v = e.target.value; document.documentElement.setAttribute('data-theme', v); localStorage.setItem('pc_theme', v); });
-
-      document.getElementById('playBtn')?.addEventListener('click', ()=>{
-        const text = (phraseBar?.dataset?.say || phraseBar?.textContent || '').trim();
-        SpeechEngine.speak(text || 'Hola');
+      minus?.addEventListener("click", ()=> sync((parseFloat(range.value)-step)));
+      plus ?.addEventListener("click", ()=> sync((parseFloat(range.value)+step)));
+      range?.addEventListener("input", ()=> val.textContent = range.value);
+      range && (val.textContent = range.value);
+      // Soporte con teclas
+      range?.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); minus?.click(); }
+        if(e.key==='ArrowRight'||e.key==='ArrowUp'){ e.preventDefault(); plus?.click(); }
       });
-      document.getElementById('clearBtn')?.addEventListener('click', ()=>{ if(phraseBar) phraseBar.textContent=''; });
-    })();
+    }
+
+    // Bind steppers
+    bindStepper("rate","rateMinus","ratePlus","rateVal",0.7,1.4,0.05,"Velocidad");
+    bindStepper("pitch","pitchMinus","pitchPlus","pitchVal",0.8,1.2,0.05,"Tono");
+    bindStepper("volume","volumeMinus","volumePlus","volumeVal",0.1,1.0,0.05,"Volumen");
+
+    // Eventos de sliders -> guardar y previsualizar
+    const preview = (msg)=>{ if(!drawer || !drawer.classList.contains('open')) return; SpeechEngine.speak(msg||'Ajuste de voz'); };
+    rateEl?.addEventListener('input', ()=>{ SpeechEngine.opts.rate   = clamp(rateEl.value, 0.7, 1.4); store.set({rate:SpeechEngine.opts.rate}); preview('Velocidad'); });
+    pitchEl?.addEventListener('input',()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); preview('Tono'); });
+    volEl?.addEventListener('input',  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); preview('Volumen'); });
+
+    voiceSelect?.addEventListener('change', ()=>{ SpeechEngine.opts.voiceURI = voiceSelect.value; store.set({voiceURI:voiceSelect.value}); preview('Voz'); });
+
+    // Poblado de voces
+    if('speechSynthesis' in window){
+      SpeechEngine.refreshVoices();
+      window.speechSynthesis.onvoiceschanged = ()=> SpeechEngine.refreshVoices();
+    }
+
+    // Tema
+    const savedTheme = localStorage.getItem('pc_theme');
+    if(savedTheme){
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const radio = themeRow?.querySelector(`input[value="${savedTheme}"]`);
+      if(radio) radio.checked = true;
+    }
+    themeRow?.addEventListener('change', (e)=>{
+      const v = e.target.value;
+      document.documentElement.setAttribute('data-theme', v);
+      localStorage.setItem('pc_theme', v);
+    });
+
+    // Reproducir / Borrar
+    document.getElementById('playBtn')?.addEventListener('click', ()=>{
+      const text = (phraseBar?.dataset?.say || phraseBar?.textContent || '').trim();
+      SpeechEngine.speak(text || 'Hola');
+    });
+    document.getElementById('clearBtn')?.addEventListener('click', ()=>{ if(phraseBar) phraseBar.textContent=''; });
+  })();
   </script>
 </body>
 </html>
+
+
+
+
