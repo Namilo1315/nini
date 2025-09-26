@@ -51,7 +51,7 @@
     .logo{width:36px;height:36px;border-radius:10px;background:#fff;color:#1e3a8a;display:grid;place-items:center;font-weight:900}
     .topbtn{border:none;border-radius:10px;background:rgb(255 255 255 / 14%); padding:10px 14px; color:#fff; font-weight:800; cursor:pointer; white-space:nowrap}
     .topbtn.primary{background:rgb(255 255 255 / 18%)}
-    .spacer{flex:1}
+    .spacer{flex:1} /* ← para centrar el título */
     @media (max-width:600px){
       .toprow{ padding:6px 8px; gap:6px; flex-wrap:wrap; position:relative }
       .brand{font-size:14px}
@@ -132,10 +132,12 @@
     .day-button.progress-75{ background:linear-gradient(45deg,#FFD93D 25%, var(--ok) 75%) }
     .day-button.completed{ background:linear-gradient(45deg, var(--ok), var(--ok2)); border:2px solid var(--ok3); color:#fff }
 
-    /* 📱 Móvil: 2 filas (4 + 3) y más chicos */
+    /* 📱 Móvil: 2 filas (4 + 3 centrados) y más chicos */
     @media (max-width:768px){
       .days-container{ grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px }
       .day-button{ padding:6px 8px; font-size:.75rem; border-radius:10px }
+      /* mover el 5.º botón a la columna 2 para centrar la última fila (quedan col 2,3,4) */
+      .days-container .day-button:nth-child(5){ grid-column:1; text-align: center;}
     }
 
     /* Rutinas: tamaño más chico */
@@ -209,7 +211,7 @@
     }
     .toggle.right{ right: max(6px, env(safe-area-inset-right)) }
     .toggle.left{ left:  max(6px, env(safe-area-inset-left)); border-radius:0 10px 10px 0; display:none }
-    @media (max-width:768px){ .toggle.left{ display:block } }
+    @media (max-width:968px){ .toggle.left{ display:block } }
     .toggle span{ display:block }
 
     /* Modal base (no usado aquí pero listo) */
@@ -232,7 +234,9 @@
   <div class="topbar" role="banner">
     <div class="toprow">
       <div class="brand"><div class="logo">PC</div> PictoComunica Pro</div>
-      <button class="topbtn primary">🗓️ RUTINAS</button>
+      <div class="spacer"></div>
+      <button class="topbtn primary">🗓️MIS RUTINAS</button>
+      <div class="spacer"></div>
     </div>
   </div>
 
@@ -330,12 +334,12 @@
   <div class="celebration" id="celebration">🎉 ¡Muy bien!</div>
 
   <script>
-    // SW opcional (respeté tu setup)
+    // SW opcional
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js', {scope: './'}));
     }
 
-    // ===== Flechas laterales — SOLO click (arregla doble toggle en móvil)
+    // ===== Flechas laterales — SOLO click (sin doble toggle)
     const sidebar     = document.getElementById('sidebar');
     const drawer      = document.getElementById('configDrawer');
     const leftToggle  = document.getElementById('leftToggle');
@@ -358,7 +362,6 @@
 
     leftToggle?.addEventListener('click', toggleSidebar);
     rightToggle?.addEventListener('click', toggleDrawer);
-    // Accesible con teclado
     [leftToggle, rightToggle].forEach(btn=>{
       btn?.addEventListener('keydown', (ev)=>{
         if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); (btn===leftToggle?toggleSidebar:toggleDrawer)(ev); }
@@ -448,8 +451,8 @@
 
       // persist + preview
       rateEl.addEventListener('input', ()=>{ SpeechEngine.opts.rate   = clamp(rateEl.value,0.7,1.4); store.set({rate:SpeechEngine.opts.rate}); });
-      pitchEl.addEventListener('input',()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); });
-      volEl.addEventListener('input',  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); });
+      pitchEl?.addEventListener('input',()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); });
+      volEl?.addEventListener('input',  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); });
 
       voiceSelect?.addEventListener('change', ()=>{ SpeechEngine.opts.voiceURI = voiceSelect.value; store.set({voiceURI:voiceSelect.value}); });
 
@@ -471,7 +474,7 @@
       });
     })();
 
-    // ===== LÓGICA RUTINAS
+    // ===== LÓGICA RUTINAS + persistencia semanal =====
     const routineItems = [
       { icon: '<img src="./imagenes/rutinas/levantar de la cama.png" alt="Levantarse" class="icon">', text: "ME LEVANTO" },
       { icon: '<img src="./imagenes/rutinas/subirse la camiseta.png" alt="Vestirse" class="icon">', text: "ME VISTO" },
@@ -491,10 +494,40 @@
       { icon: '<img src="./imagenes/rutinas/dormir.png" alt="Dormir" class="icon">', text: "ME VOY A DORMIR" }
     ];
 
-    const dayProgress = {
+    let dayProgress = {
       Lunes:{checked:[],progress:0}, Martes:{checked:[],progress:0}, Miércoles:{checked:[],progress:0},
       Jueves:{checked:[],progress:0}, Viernes:{checked:[],progress:0}, Sábado:{checked:[],progress:0}, Domingo:{checked:[],progress:0}
     };
+
+    const LS_KEY = 'pc_routines_v1';
+
+    function getISOWeek(d){
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7; // lunes=1...domingo=7
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+      const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1)/7);
+      return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2,'0')}`;
+    }
+
+    function saveState(){
+      const payload = { week:getISOWeek(new Date()), data:dayProgress };
+      localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    }
+
+    function loadState(){
+      try{
+        const raw = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+        if(!raw) return;
+        const currentWeek = getISOWeek(new Date());
+        if(raw.week !== currentWeek){
+          // Semana nueva → limpiar
+          localStorage.removeItem(LS_KEY);
+          return;
+        }
+        if(raw.data){ dayProgress = raw.data; }
+      }catch{}
+    }
 
     function createRoutineItems(){
       const container = document.getElementById('routineList');
@@ -540,7 +573,8 @@
 
     function checkItem(cb){
       const activeDayBtn = document.querySelector('.day-button.active');
-      const currentDay = activeDayBtn?.dataset.day || 'Lunes';
+      if(!activeDayBtn) return; // no hay día seleccionado aún
+      const currentDay = activeDayBtn.dataset.day;
       const idx = Array.from(document.querySelectorAll('#routineList .checkbox')).indexOf(cb);
       const item = cb.closest('.routine-item');
 
@@ -560,6 +594,7 @@
       }else{
         activeDayBtn?.classList.remove('completed');
       }
+      saveState();
     }
 
     function setActiveDay(button){
@@ -568,12 +603,14 @@
       const currentDay = button.dataset.day;
       speakText(currentDay);
 
+      // restaurar checks del día
       document.querySelectorAll('#routineList .checkbox').forEach((cb, i)=>{
         const item = cb.closest('.routine-item');
         if(dayProgress[currentDay].checked.includes(i)){ cb.checked = true; item.classList.add('completed'); }
         else{ cb.checked = false; item.classList.remove('completed'); }
       });
 
+      // refrescar barras para todos
       Object.entries(dayProgress).forEach(([day,data])=>{
         const btn = document.querySelector(`.day-button[data-day="${day}"]`);
         const pct = (data.checked.length / routineItems.length)*100;
@@ -583,16 +620,14 @@
         else if(pct>=75 && pct<100) btn.classList.add('progress-75');
         else if(pct===100) btn.classList.add('completed');
       });
+
+      saveState();
     }
 
-    // Init
-    createRoutineItems();
-    const lunesBtn = document.querySelector('.day-button[data-day="Lunes"]');
-    if(lunesBtn){
-      document.querySelectorAll('.day-button').forEach(b=> b.classList.remove('active'));
-      lunesBtn.classList.add('active');
-      setActiveDay(lunesBtn);
-    }
+    // Init (sin seleccionar Lunes por defecto)
+    loadState();              // carga y resetea si semana nueva
+    createRoutineItems();     // crea la lista
+    // no seleccionamos ningún día aquí; el usuario elige
   </script>
 </body>
 </html>
