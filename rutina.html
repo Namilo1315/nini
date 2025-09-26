@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PictoComunica Pro — Rutinas</title>
+  <meta name="theme-color" content="#2563eb"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+
+  <style>
+    :root{
+      --bg:#ffffff; --card:#ffffff; --text:#0b1220; --muted:#475569;
+      --primary:#2563eb; --accent:#10b981; --border:#e2e8f0; --focus:#93c5fd;
+      --topbar:60px; --rail:180px; --gap:10px;
+      --chip1:#e0f2fe; --chip2:#f1f5f9; --chip3:#fff7ed; --chip4:#ecfeff;
+      --chip5:#fef3c7; --chip6:#fce7f3; --chip7:#f0fdf4; --chip8:#ede9fe;
+      --ok:#4CAF50; --ok2:#81C784; --ok3:#2E7D32;
+      --warn:#ff9147; --shadow:0 5px 15px rgba(0,0,0,.08);
+    }
+    [data-theme="dark"]{
+      --bg:#0f172a; --card:#0b1220; --text:#f8fafc; --muted:#cbd5e1;
+      --primary:#60a5fa; --accent:#22c55e; --border:#1f2937; --focus:#60a5fa;
+      --chip1:#0b3a5e; --chip2:#0f172a; --chip3:#3b2f1a; --chip4:#063a3a;
+      --chip5:#3a2d09; --chip6:#4a1030; --chip7:#102a12; --chip8:#231942;
+    }
+    [data-theme="contrast"]{
+      --bg:#ffffff; --card:#ffffff; --text:#000; --muted:#111;
+      --primary:#000; --accent:#000; --border:#000; --focus:#000;
+      --chip1:#fff; --chip2:#fff; --chip3:#fff; --chip4:#fff; --chip5:#fff; --chip6:#fff; --chip7:#fff; --chip8:#fff;
+    }
+    [data-theme="pastel"]{
+      --bg:#fbfdff; --card:#ffffff; --text:#102a43; --muted:#486581;
+      --primary:#7c3aed; --accent:#22c55e; --border:#e6effa; --focus:#c4b5fd;
+      --chip1:#e9d5ff; --chip2:#ffe4e6; --chip3:#fef9c3; --chip4:#dcfce7;
+      --chip5:#e0f2fe; --chip6:#fde68a; --chip7:#f5d0fe; --chip8:#cffafe;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);
+         font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; overflow-x:hidden}
+
+    /* Topbar */
+    .topbar{
+      position:fixed; inset:0 0 auto 0; height:var(--topbar);
+      z-index:100; background:linear-gradient(90deg,var(--primary),#1e3a8a);
+      color:#fff; display:flex; align-items:center; box-shadow:0 2px 8px rgb(0 0 0/12%);
+    }
+    .toprow{max-width:1400px; margin:0 auto; width:100%; padding:8px 12px; display:flex; gap:8px; align-items:center}
+    .brand{display:flex; gap:10px; align-items:center; font-weight:900; min-width:0}
+    .logo{width:36px;height:36px;border-radius:10px;background:#fff;color:#1e3a8a;display:grid;place-items:center;font-weight:900}
+    .topbtn{border:none;border-radius:10px;background:rgb(255 255 255 / 14%); padding:10px 14px; color:#fff; font-weight:800; cursor:pointer; white-space:nowrap}
+    .topbtn.primary{background:rgb(255 255 255 / 18%)}
+    .spacer{flex:1}
+    @media (max-width:600px){
+      .toprow{ padding:6px 8px; gap:6px; flex-wrap:wrap; position:relative }
+      .brand{font-size:14px}
+      .logo{ width:30px; height:30px }
+      .topbtn{ padding:8px 10px; font-size:12px }
+    }
+
+    /* Layout */
+    .layout{
+      max-width:1400px; margin: calc(var(--topbar) + 12px) auto 14px;
+      padding: 0 10px; display:grid; grid-template-columns:var(--rail) 1fr; gap:var(--gap);
+    }
+    .layout > * { min-width:0; }
+    @media (max-width:768px){ :root{ --rail:100% } .layout{ grid-template-columns:1fr } }
+
+    /* Sidebar */
+    .sidebar{
+      background:var(--card); border:1px solid var(--border); border-radius:14px; padding:10px;
+      height:max-content; position: sticky; top: calc(var(--topbar) + 10px);
+      min-width:0; overflow:auto; z-index:101; max-height: calc(100vh - var(--topbar) - 20px);
+    }
+    .sectionTitle{margin:6px 0 8px; color:var(--muted); font-weight:900; font-size:12px; letter-spacing:.3px}
+    .seclist{display:flex; flex-direction:column; gap:8px}
+    .chip{
+      width:100%; display:grid; grid-template-columns:28px 1fr; gap:8px; align-items:center;
+      padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--card);
+      cursor:pointer; font-weight:900; font-size:13px; transition:transform .06s ease;
+      white-space:normal; word-break:break-word; text-decoration:none; color:inherit;
+    }
+    .chip:hover{ transform:translateY(-1px) }
+    .chip .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px}
+    .c1{ background:var(--chip1) } .c2{ background:var(--chip2) } .c3{ background:var(--chip3) } .c4{ background:var(--chip4) }
+    .c5{ background:var(--chip5) } .c6{ background:var(--chip6) } .c7{ background:var(--chip7) } .c8{ background:var(--chip8) }
+
+    @media (max-width:768px){
+      .sidebar{
+        position:fixed; left:0; top:var(--topbar); bottom:0; width:280px;
+        transform:translateX(-100%); transition:transform .25s ease; box-shadow:2px 0 18px rgb(0 0 0/18%);
+      }
+      .sidebar.open{ transform:translateX(0) }
+    }
+
+    /* Main */
+    .main{min-height:60vh; min-width:0}
+
+    /* ====== CONTENIDO: Rutinas ====== */
+    .routine-wrap{
+      max-width:1100px; width:95%; margin: 0 auto;
+      background:var(--card); border:1px solid var(--border); border-radius:16px; padding:10px;
+      box-shadow:0 0 20px rgba(0,0,0,.06);
+    }
+
+    /* Botones de día: colores PC Pro por día */
+    .days-container{
+      display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px;
+      margin: 4px 0 10px;
+    }
+    .day-button{
+      border:none; border-radius:12px; padding:8px 10px;
+      color:#000000; font-weight:700; cursor:pointer; box-shadow:var(--shadow);
+      transition:transform .15s ease, box-shadow .15s ease;
+      font-size:0.90rem; letter-spacing:.2px;
+    }
+    .day-button:hover{ transform:translateY(-3px) }
+    .day-button.active{ outline:2px solid var(--focus) }
+
+    .day-lunes     { background:var(--chip1) }
+    .day-martes    { background:var(--chip5) }
+    .day-miércoles { background:var(--chip7) }
+    .day-jueves    { background:var(--chip6) }
+    .day-viernes   { background:var(--chip8) }
+    .day-sábado    { background:var(--chip3) }
+    .day-domingo   { background:var(--chip2) }
+
+    /* Estados de progreso (mantienen paleta pero con verde) */
+    .day-button.progress-25{ background:linear-gradient(45deg,#FFD93D 75%, var(--ok) 25%) }
+    .day-button.progress-50{ background:linear-gradient(45deg,#FFD93D 50%, var(--ok) 50%) }
+    .day-button.progress-75{ background:linear-gradient(45deg,#FFD93D 25%, var(--ok) 75%) }
+    .day-button.completed{ background:linear-gradient(45deg, var(--ok), var(--ok2)); border:2px solid var(--ok3); color:#fff }
+
+    /* 📱 Móvil: 2 filas (4 + 3) y más chicos */
+    @media (max-width:768px){
+      .days-container{ grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px }
+      .day-button{ padding:6px 8px; font-size:.75rem; border-radius:10px }
+    }
+
+    /* Rutinas: tamaño más chico */
+    #routineList{
+      display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:6px;
+      margin-top: 15px;
+    }
+    @media (min-width:1200px){ #routineList{ grid-template-columns:repeat(3,1fr); } }
+    @media (max-width:768px){ #routineList{ grid-template-columns:1fr } }
+
+    .routine-item{
+      display:flex; align-items:center; gap:1px;
+      border:2px solid rgb(255, 179, 2); border-radius:12px; padding:6px; background:#fff;
+      transition:transform .12s ease, box-shadow .12s ease;
+      margin: 2px;
+    }
+    .routine-item:hover{ transform:translateY(-3px); box-shadow:var(--shadow) }
+    .icon{ width:56px; height:46px; pointer-events:none }
+    @media (max-width:768px){ .icon{ width:32px; height:32px } }
+
+    .routine-text{
+      flex:1; font-size:.83rem; font-weight:600; color:#000; cursor:pointer;
+      padding:3px 6px; border-radius:6px; transition:background-color .15s ease;
+    }
+     @media (max-width:768px){ .routine-text{
+      flex:1; font-size:.75rem; font-weight:600; color:#000; cursor:pointer;
+      padding:3px 6px; border-radius:6px; transition:background-color .15s ease;
+    } }
+
+    .routine-text:hover{ background:rgba(255,217,61,.16) }
+    .routine-text.repeating{ animation:repeatAction .45s ease; background:rgba(255,179,71,.16) }
+    @keyframes repeatAction{ 0%{transform:scale(1)} 50%{transform:scale(1.04)} 100%{transform:scale(1)} }
+
+    .checkbox{ width:26px; height:26px; cursor:pointer; accent-color: var(--ok) }
+    @media (max-width:768px){ .checkbox{ width:22px; height:22px } }
+    .routine-item.completed{ background:linear-gradient(45deg,#E8F5E9,#C8E6C9); border-color: var(--ok) }
+
+    .celebration{
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      font-size:1.6rem; display:none; z-index:1000; animation:celebrate 1s infinite
+    }
+    @keyframes celebrate{
+      0%{ transform:translate(-50%,-50%) scale(1) rotate(0) }
+      50%{ transform:translate(-50%,-50%) scale(1.15) rotate(10deg) }
+      100%{ transform:translate(-50%,-50%) scale(1) rotate(0) }
+    }
+
+    /* Drawer Config */
+    .drawer{
+      position:fixed; top:var(--topbar); right:0; width:320px; height:calc(100% - var(--topbar));
+      background:var(--card); border-left:1px solid var(--border); box-shadow:-6px 0 24px rgb(0 0 0 / 10%);
+      transform:translateX(100%); transition:transform .25s ease; z-index:99; display:flex; flex-direction:column;
+    }
+    .drawer.open{ transform:translateX(0) }
+    .drawer h3{ margin:12px; font-size:16px }
+    .drawer .content{ padding:0 12px 12px; overflow:auto; display:grid; gap:10px }
+    .ctrl label{ display:block; font-size:12px; color:var(--muted); margin-bottom:4px; font-weight:700 }
+    .ctrl input[type="range"], .ctrl select{ width:100%; }
+    .radio-row{ display:flex; flex-wrap:wrap; gap:8px }
+    .radio-row label{ display:flex; align-items:center; gap:6px; padding:6px 8px; border:1px solid var(--border); border-radius:999px; cursor:pointer; font-size:12px; font-weight:700 }
+    .drawer .foot{ margin-top:auto; padding:10px 12px; border-top:1px solid var(--border); display:flex; gap:8px }
+    .btn{ border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:10px; padding:8px 10px; font-weight:800; cursor:pointer }
+    .btn.primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
+    .btn.ghost{ background:transparent }
+
+    /* Toggles laterales */
+    .toggle{
+      position:fixed; top:50%; transform:translateY(-50%);
+      z-index:1001; background:var(--primary); color:#fff; border:none; border-radius:10px 0 0 10px;
+      width:44px; height:88px; cursor:pointer; box-shadow:-2px 2px 10px rgb(0 0 0 / 18%); font-size:16px; font-weight:900;
+    }
+    .toggle.right{ right: max(6px, env(safe-area-inset-right)) }
+    .toggle.left{ left:  max(6px, env(safe-area-inset-left)); border-radius:0 10px 10px 0; display:none }
+    @media (max-width:768px){ .toggle.left{ display:block } }
+    .toggle span{ display:block }
+
+    /* Modal base (no usado aquí pero listo) */
+    .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgb(0 0 0 / 40%); z-index:90 }
+    .modal.open{ display:grid }
+    .sheet{ width:min(980px,96vw); max-height:80vh; overflow:auto; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px; box-shadow:0 12px 40px rgb(0 0 0 / 30%); }
+    .sheetHead{ display:flex; align-items:center; gap:10px; margin-bottom:8px }
+    .sheetHead h3{ margin:0; font-size:18px }
+    .closeX{ margin-left:auto; border:1px solid var(--border); background:var(--card); border-radius:10px; padding:6px 10px; cursor:pointer; font-weight:800 }
+
+    /* Stepper ± para sliders */
+    .stepper{ display:flex; align-items:center; gap:8px; margin-top:6px }
+    .stepper .btn{ padding:6px 10px }
+    .stepper .val{ min-width:42px; text-align:center; font-weight:800; font-size:12px; color:var(--muted) }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar" role="banner">
+    <div class="toprow">
+      <div class="brand"><div class="logo">PC</div> PictoComunica Pro</div>
+      <button class="topbtn primary">🗓️ RUTINAS</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout" role="main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Secciones" id="sidebar">
+      <div class="sectionTitle">Secciones</div>
+      <div class="seclist" id="secList">
+        <a class="chip" href="index.html"><div class="ico c1">🏠</div> Panel</a>
+        <a class="chip" href="yoquiero.html"><div class="ico c5">❤️</div> Yo quiero</a>
+        <a class="chip" href="rutina.html"><div class="ico c5">🗓️</div> Rutinas</a>
+        <a class="chip" href="numeros.html"><div class="ico c7">🔢</div> Números</a>
+        <a class="chip" href="letras.html"><div class="ico c6">🔤</div> Letras</a>
+        <a class="chip" href="familia.html"><div class="ico c8">👨‍👩‍👧</div> Familia</a>
+        <a class="chip" href="autoreg.html"><div class="ico c3">🧘</div> Autorregulación</a>
+        <a class="chip" href="juego.html"><div class="ico c2">🎮</div> Juego</a>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <section class="main">
+      <div class="routine-wrap">
+        <div class="days-container">
+          <button class="day-button day-lunes"     data-day="Lunes"     onclick="setActiveDay(this)">Lunes 😊</button>
+          <button class="day-button day-martes"    data-day="Martes"    onclick="setActiveDay(this)">Martes 🌈</button>
+          <button class="day-button day-miércoles" data-day="Miércoles" onclick="setActiveDay(this)">Miércoles 🎈</button>
+          <button class="day-button day-jueves"    data-day="Jueves"    onclick="setActiveDay(this)">Jueves 🌞</button>
+          <button class="day-button day-viernes"   data-day="Viernes"   onclick="setActiveDay(this)">Viernes 🎨</button>
+          <button class="day-button day-sábado"    data-day="Sábado"    onclick="setActiveDay(this)">Sábado 🎮</button>
+          <button class="day-button day-domingo"   data-day="Domingo"   onclick="setActiveDay(this)">Domingo 🎪</button>
+        </div>
+
+        <div id="routineList" aria-live="polite"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Flechas laterales -->
+  <button class="toggle left"  id="leftToggle"  aria-controls="sidebar"      aria-expanded="false" title="Abrir secciones">❯</button>
+  <button class="toggle right" id="rightToggle" aria-controls="configDrawer" aria-expanded="false" title="Abrir configuración">❮</button>
+
+  <!-- Drawer Config -->
+  <aside id="configDrawer" class="drawer" aria-label="Configuración">
+    <h3>⚙️ Configuración</h3>
+    <div class="content">
+      <div class="ctrl">
+        <label for="voiceSelect">Voz / Idioma</label>
+        <select id="voiceSelect"></select>
+      </div>
+      <div class="ctrl">
+        <label for="rate">Velocidad</label>
+        <div class="stepper">
+          <button class="btn" type="button" id="rateMinus">−</button>
+          <input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1" />
+          <button class="btn" type="button" id="ratePlus">+</button>
+          <div class="val" id="rateVal">1</div>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label for="pitch">Tono</label>
+        <div class="stepper">
+          <button class="btn" type="button" id="pitchMinus">−</button>
+          <input id="pitch" type="range" min="0.8" max="1.2" step="0.05" value="1" />
+          <button class="btn" type="button" id="pitchPlus">+</button>
+          <div class="val" id="pitchVal">1</div>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label for="volume">Volumen</label>
+        <div class="stepper">
+          <button class="btn" type="button" id="volMinus">−</button>
+          <input id="volume" type="range" min="0.1" max="1" step="0.05" value="1" />
+          <button class="btn" type="button" id="volPlus">+</button>
+          <div class="val" id="volVal">1</div>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Tema</label>
+        <div class="radio-row" id="themeRow">
+          <label><input type="radio" name="theme" value="light" checked> Claro</label>
+          <label><input type="radio" name="theme" value="dark"> Oscuro</label>
+          <label><input type="radio" name="theme" value="contrast"> Alto contraste</label>
+          <label><input type="radio" name="theme" value="pastel"> Pastel</label>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="resetBtn" type="button">Restablecer</button>
+      <button class="btn primary" id="closeDrawer" type="button">Listo</button>
+    </div>
+  </aside>
+
+  <!-- Mensaje celebración -->
+  <div class="celebration" id="celebration">🎉 ¡Muy bien!</div>
+
+  <script>
+    // SW opcional (respeté tu setup)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js', {scope: './'}));
+    }
+
+    // ===== Flechas laterales — SOLO click (arregla doble toggle en móvil)
+    const sidebar     = document.getElementById('sidebar');
+    const drawer      = document.getElementById('configDrawer');
+    const leftToggle  = document.getElementById('leftToggle');
+    const rightToggle = document.getElementById('rightToggle');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const secList     = document.getElementById('secList');
+
+    function toggleSidebar(ev){
+      ev?.preventDefault?.();
+      const open = !sidebar.classList.contains('open');
+      sidebar.classList.toggle('open', open);
+      leftToggle.setAttribute('aria-expanded', String(open));
+    }
+    function toggleDrawer(ev){
+      ev?.preventDefault?.();
+      const open = !drawer.classList.contains('open');
+      drawer.classList.toggle('open', open);
+      rightToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    leftToggle?.addEventListener('click', toggleSidebar);
+    rightToggle?.addEventListener('click', toggleDrawer);
+    // Accesible con teclado
+    [leftToggle, rightToggle].forEach(btn=>{
+      btn?.addEventListener('keydown', (ev)=>{
+        if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); (btn===leftToggle?toggleSidebar:toggleDrawer)(ev); }
+      });
+    });
+
+    closeDrawer?.addEventListener('click', ()=>{
+      drawer.classList.remove('open');
+      rightToggle.setAttribute('aria-expanded','false');
+      if (window.matchMedia('(max-width: 768px)').matches){
+        sidebar.classList.remove('open');
+        leftToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    // Ocultar sidebar tras navegar en móvil
+    secList?.addEventListener('click', (ev)=>{
+      const link = ev.target.closest('a.chip');
+      if(!link) return;
+      if (window.matchMedia('(max-width: 768px)').matches){
+        sidebar.classList.remove('open');
+        leftToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    // ===== Configuración de voz + tema
+    (function(){
+      const voiceSelect = document.getElementById('voiceSelect');
+      const rateEl = document.getElementById('rate');
+      const pitchEl = document.getElementById('pitch');
+      const volEl = document.getElementById('volume');
+      const rateVal = document.getElementById('rateVal');
+      const pitchVal = document.getElementById('pitchVal');
+      const volVal = document.getElementById('volVal');
+      const themeRow = document.getElementById('themeRow');
+
+      const store = {
+        get k(){ return JSON.parse(localStorage.getItem('pc_speech')||'{}'); },
+        set(obj){ localStorage.setItem('pc_speech', JSON.stringify(Object.assign(this.k,obj))); }
+      };
+
+      const SpeechEngine = {
+        voices: [],
+        opts: {
+          voiceURI: store.k.voiceURI || null,
+          rate:  parseFloat(store.k.rate  ?? rateEl?.value ?? 1) || 1,
+          pitch: parseFloat(store.k.pitch ?? pitchEl?.value ?? 1) || 1,
+          volume:parseFloat(store.k.volume?? volEl?.value ?? 1) || 1
+        },
+        refreshVoices(){
+          if(!('speechSynthesis' in window)) return;
+          const raw = window.speechSynthesis.getVoices();
+          const es  = raw.filter(v=>/^es[-_]/i.test(v.lang));
+          const rest= raw.filter(v=>!/^es[-_]/i.test(v.lang));
+          const seen = new Set();
+          this.voices = es.concat(rest).filter(v=>{ if(seen.has(v.voiceURI)) return false; seen.add(v.voiceURI); return true; });
+          if(voiceSelect){
+            voiceSelect.innerHTML = this.voices.map(v=>`<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`).join('');
+            const want = this.voices.find(v=>v.voiceURI===this.opts.voiceURI)?.voiceURI || this.voices[0]?.voiceURI || '';
+            voiceSelect.value = want; this.opts.voiceURI = want; store.set({voiceURI: want});
+          }
+        },
+        speak(text){
+          if(!('speechSynthesis' in window) || !text) return;
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          const voice = this.voices.find(v=>v.voiceURI===this.opts.voiceURI);
+          if(voice){ u.voice = voice; u.lang = voice.lang; } else { u.lang = 'es-ES'; }
+          u.rate = this.opts.rate; u.pitch = this.opts.pitch; u.volume = this.opts.volume;
+          window.speechSynthesis.speak(u);
+        }
+      };
+      window.speak = (t)=> SpeechEngine.speak(t);
+
+      function clamp(n,min,max){ n=parseFloat(n); return Math.min(max, Math.max(min, n)); }
+      function stepper(minusBtn, rangeEl, plusBtn, valBox, min, max, step){
+        const sync = (v)=>{ rangeEl.value=v; valBox.textContent=v; rangeEl.dispatchEvent(new Event('input',{bubbles:true})); };
+        minusBtn.addEventListener('click', ()=> sync(clamp((parseFloat(rangeEl.value)-step).toFixed(2),min,max)));
+        plusBtn .addEventListener('click', ()=> sync(clamp((parseFloat(rangeEl.value)+step).toFixed(2),min,max)));
+        rangeEl.addEventListener('input', ()=> valBox.textContent = rangeEl.value);
+      }
+
+      // init steppers
+      stepper(document.getElementById('rateMinus'), rateEl,  document.getElementById('ratePlus'),  rateVal,  0.7, 1.4, 0.05);
+      stepper(document.getElementById('pitchMinus'),pitchEl, document.getElementById('pitchPlus'), pitchVal, 0.8, 1.2, 0.05);
+      stepper(document.getElementById('volMinus'),  volEl,   document.getElementById('volPlus'),  volVal,   0.1, 1.0, 0.05);
+
+      // persist + preview
+      rateEl.addEventListener('input', ()=>{ SpeechEngine.opts.rate   = clamp(rateEl.value,0.7,1.4); store.set({rate:SpeechEngine.opts.rate}); });
+      pitchEl.addEventListener('input',()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); });
+      volEl.addEventListener('input',  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); });
+
+      voiceSelect?.addEventListener('change', ()=>{ SpeechEngine.opts.voiceURI = voiceSelect.value; store.set({voiceURI:voiceSelect.value}); });
+
+      if('speechSynthesis' in window){
+        SpeechEngine.refreshVoices();
+        window.speechSynthesis.onvoiceschanged = ()=> SpeechEngine.refreshVoices();
+      }
+
+      // Tema
+      const savedTheme = localStorage.getItem('pc_theme');
+      if(savedTheme){
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeRow?.querySelector(`input[value="${savedTheme}"]`)?.setAttribute('checked','checked');
+      }
+      themeRow?.addEventListener('change', (e)=>{
+        const v = e.target.value;
+        document.documentElement.setAttribute('data-theme', v);
+        localStorage.setItem('pc_theme', v);
+      });
+    })();
+
+    // ===== LÓGICA RUTINAS
+    const routineItems = [
+      { icon: '<img src="./imagenes/rutinas/levantar de la cama.png" alt="Levantarse" class="icon">', text: "ME LEVANTO" },
+      { icon: '<img src="./imagenes/rutinas/subirse la camiseta.png" alt="Vestirse" class="icon">', text: "ME VISTO" },
+      { icon: '<img src="./imagenes/rutinas/bano.png" alt="Baño" class="icon">', text: "VOY AL BAÑO" },
+      { icon: '<img src="./imagenes/rutinas/cepillar los dientes.png" alt="Cepillar dientes" class="icon">', text: "ME LAVO LOS DIENTES" },
+      { icon: '<img src="./imagenes/rutinas/lavado de manos.png" alt="Lavado de manos" class="icon">', text: "ME LAVO LAS MANOS" },
+      { icon: '<img src="./imagenes/rutinas/secar las manos.png" alt="Secar manos" class="icon">', text: "ME SECO LAS MANOS" },
+      { icon: '<img src="./imagenes/rutinas/desayunar (1).png" alt="Desayuno" class="icon">', text: "DESAYUNO" },
+      { icon: '<img src="./imagenes/rutinas/escuela.png" alt="Escuela" class="icon">', text: "ME PREPARO PARA LA ESCUELA" },
+      { icon: '<img src="./imagenes/rutinas/comer (2).png" alt="Almuerzo" class="icon">', text: "ALMUERZO" },
+      { icon: '<img src="./imagenes/rutinas/terapias.png" alt="Terapia" class="icon">', text: "VOY A TERAPIA" },
+      { icon: '<img src="./imagenes/rutinas/jugar al corro.png" alt="Jugar" class="icon">', text: "JUEGO" },
+      { icon: '<img src="./imagenes/rutinas/recoger los juguetes.png" alt="Ordenar" class="icon">', text: "ORDENO LOS JUGUETES" },
+      { icon: '<img src="./imagenes/rutinas/escuela (2).png" alt="Tarea" class="icon">', text: "HAGO LA TAREA" },
+      { icon: '<img src="./imagenes/rutinas/comer (2).png" alt="Cena" class="icon">', text: "CENO" },
+      { icon: '<img src="./imagenes/rutinas/ducha.png" alt="Baño" class="icon">', text: "ME BAÑO" },
+      { icon: '<img src="./imagenes/rutinas/dormir.png" alt="Dormir" class="icon">', text: "ME VOY A DORMIR" }
+    ];
+
+    const dayProgress = {
+      Lunes:{checked:[],progress:0}, Martes:{checked:[],progress:0}, Miércoles:{checked:[],progress:0},
+      Jueves:{checked:[],progress:0}, Viernes:{checked:[],progress:0}, Sábado:{checked:[],progress:0}, Domingo:{checked:[],progress:0}
+    };
+
+    function createRoutineItems(){
+      const container = document.getElementById('routineList');
+      container.innerHTML = '';
+      routineItems.forEach((item, idx)=>{
+        const div = document.createElement('div');
+        div.className = 'routine-item';
+        div.innerHTML = `
+          <div class="icon-container" onclick="repeatText(this.nextElementSibling, '${item.text}')">${item.icon}</div>
+          <span class="routine-text" onclick="repeatText(this, '${item.text}')">${item.text}</span>
+          <input type="checkbox" class="checkbox" onchange="checkItem(this)">
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function speakText(t){ if(typeof window.speak==='function') window.speak(t); }
+    function repeatText(el, text){
+      el.classList.add('repeating');
+      setTimeout(()=> el.classList.remove('repeating'), 450);
+      speakText(text);
+    }
+
+    function showCelebration(){
+      const c = document.getElementById('celebration');
+      c.style.display='block';
+      setTimeout(()=> c.style.display='none', 900);
+    }
+
+    function updateProgressBar(currentDay){
+      const total = routineItems.length;
+      const checked = dayProgress[currentDay].checked.length;
+      const pct = (checked/total)*100;
+      const btn = document.querySelector(`.day-button[data-day="${currentDay}"]`);
+      if(!btn) return;
+      btn.classList.remove('progress-25','progress-50','progress-75','completed');
+      if(pct>=25 && pct<50) btn.classList.add('progress-25');
+      else if(pct>=50 && pct<75) btn.classList.add('progress-50');
+      else if(pct>=75 && pct<100) btn.classList.add('progress-75');
+      else if(pct===100) btn.classList.add('completed');
+      dayProgress[currentDay].progress = pct;
+    }
+
+    function checkItem(cb){
+      const activeDayBtn = document.querySelector('.day-button.active');
+      const currentDay = activeDayBtn?.dataset.day || 'Lunes';
+      const idx = Array.from(document.querySelectorAll('#routineList .checkbox')).indexOf(cb);
+      const item = cb.closest('.routine-item');
+
+      if(cb.checked){
+        item.classList.add('completed');
+        if(!dayProgress[currentDay].checked.includes(idx)) dayProgress[currentDay].checked.push(idx);
+        showCelebration();
+      }else{
+        item.classList.remove('completed');
+        dayProgress[currentDay].checked = dayProgress[currentDay].checked.filter(i=>i!==idx);
+      }
+      updateProgressBar(currentDay);
+
+      const allChecked = document.querySelectorAll('#routineList .checkbox');
+      if([...allChecked].every(x=>x.checked)){
+        activeDayBtn?.classList.add('completed');
+      }else{
+        activeDayBtn?.classList.remove('completed');
+      }
+    }
+
+    function setActiveDay(button){
+      document.querySelectorAll('.day-button').forEach(b=> b.classList.remove('active'));
+      button.classList.add('active');
+      const currentDay = button.dataset.day;
+      speakText(currentDay);
+
+      document.querySelectorAll('#routineList .checkbox').forEach((cb, i)=>{
+        const item = cb.closest('.routine-item');
+        if(dayProgress[currentDay].checked.includes(i)){ cb.checked = true; item.classList.add('completed'); }
+        else{ cb.checked = false; item.classList.remove('completed'); }
+      });
+
+      Object.entries(dayProgress).forEach(([day,data])=>{
+        const btn = document.querySelector(`.day-button[data-day="${day}"]`);
+        const pct = (data.checked.length / routineItems.length)*100;
+        btn.classList.remove('progress-25','progress-50','progress-75','completed');
+        if(pct>=25 && pct<50) btn.classList.add('progress-25');
+        else if(pct>=50 && pct<75) btn.classList.add('progress-50');
+        else if(pct>=75 && pct<100) btn.classList.add('progress-75');
+        else if(pct===100) btn.classList.add('completed');
+      });
+    }
+
+    // Init
+    createRoutineItems();
+    const lunesBtn = document.querySelector('.day-button[data-day="Lunes"]');
+    if(lunesBtn){
+      document.querySelectorAll('.day-button').forEach(b=> b.classList.remove('active'));
+      lunesBtn.classList.add('active');
+      setActiveDay(lunesBtn);
+    }
+  </script>
+</body>
+</html>
