@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PictoComunica Pro — Yo quiero</title>
+  <meta name="theme-color" content="#2563eb"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <style>
+    :root{
+      --bg:#ffffff; --card:#ffffff; --text:#0b1220; --muted:#475569;
+      --primary:#2563eb; --accent:#10b981; --border:#e2e8f0; --focus:#93c5fd;
+      --topbar:60px; --rail:180px; --gap:10px;
+      --chip1:#e0f2fe; --chip2:#f1f5f9; --chip3:#fff7ed; --chip4:#ecfeff;
+      --chip5:#fef3c7; --chip6:#fce7f3; --chip7:#f0fdf4; --chip8:#ede9fe;
+      --ok:#4CAF50; --ok2:#81C784; --ok3:#2E7D32; --shadow:0 5px 15px rgba(0,0,0,.08);
+    }
+    [data-theme="dark"]{
+      --bg:#0f172a; --card:#0b1220; --text:#f8fafc; --muted:#cbd5e1;
+      --primary:#60a5fa; --accent:#22c55e; --border:#1f2937; --focus:#60a5fa;
+      --chip1:#0b3a5e; --chip2:#0f172a; --chip3:#3b2f1a; --chip4:#063a3a;
+      --chip5:#3a2d09; --chip6:#4a1030; --chip7:#102a12; --chip8:#231942;
+    }
+    [data-theme="contrast"]{
+      --bg:#ffffff; --card:#ffffff; --text:#000; --muted:#111;
+      --primary:#000; --accent:#000; --border:#000; --focus:#000;
+      --chip1:#fff; --chip2:#fff; --chip3:#fff; --chip4:#fff; --chip5:#fff; --chip6:#fff; --chip7:#fff; --chip8:#fff;
+    }
+    [data-theme="pastel"]{
+      --bg:#fbfdff; --card:#ffffff; --text:#102a43; --muted:#486581;
+      --primary:#7c3aed; --accent:#22c55e; --border:#e6effa; --focus:#c4b5fd;
+      --chip1:#e9d5ff; --chip2:#ffe4e6; --chip3:#fef9c3; --chip4:#dcfce7;
+      --chip5:#e0f2fe; --chip6:#fde68a; --chip7:#f5d0fe; --chip8:#cffafe;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;overflow-x:hidden}
+
+    /* Topbar */
+    .topbar{position:fixed;inset:0 0 auto 0;height:var(--topbar);z-index:100;background:linear-gradient(90deg,var(--primary),#1e3a8a);color:#fff;display:flex;align-items:center;box-shadow:0 2px 8px rgb(0 0 0/12%)}
+    .toprow{max-width:1400px;margin:0 auto;width:100%;padding:8px 12px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:900;min-width:0}
+    .logo{width:36px;height:36px;border-radius:10px;background:#fff;color:#1e3a8a;display:grid;place-items:center;font-weight:900}
+    .topbtn{border:none;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;white-space:nowrap}
+    .topbtn.primary{background:rgb(255 255 255 / 18%);color:#fff;justify-self:center}
+    @media (max-width:600px){.toprow{padding:6px 8px;gap:6px}.logo{width:30px;height:30px}.topbtn{padding:8px 10px;font-size:12px}}
+
+    /* Layout */
+    .layout{max-width:1400px;margin:calc(var(--topbar) + 12px) auto 14px;padding:0 10px;display:grid;grid-template-columns:var(--rail) 1fr;gap:var(--gap)}
+    .layout>*{min-width:0}
+    @media (max-width:968px){ .layout{grid-template-columns:1fr} }
+    @media (max-width:768px){ :root{--rail:100%} .layout{grid-template-columns:1fr} }
+
+    /* Sidebar */
+    .sidebar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;height:max-content;position:sticky;top:calc(var(--topbar) + 10px);min-width:0;overflow:auto;z-index:101;max-height:calc(100vh - var(--topbar) - 20px)}
+    .sectionTitle{margin:6px 0 8px;color:var(--muted);font-weight:900;font-size:12px;letter-spacing:.3px}
+    .seclist{display:flex;flex-direction:column;gap:8px}
+    .chip{width:100%;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-weight:900;font-size:13px;text-decoration:none;color:inherit;transition:transform .06s ease}
+    .chip:hover{transform:translateY(-1px)}
+    .chip .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px}
+    .c1{background:var(--chip1)}.c2{background:var(--chip2)}.c3{background:var(--chip3)}.c4{background:var(--chip4)}.c5{background:var(--chip5)}.c6{background:var(--chip6)}.c7{background:var(--chip7)}.c8{background:var(--chip8)}
+    @media (max-width:968px){
+      .sidebar{position:fixed;left:0;top:var(--topbar);bottom:0;width:280px;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 18px rgb(0 0 0 / 18%)}
+      .sidebar.open{transform:translateX(0)}
+    }
+
+    .main{min-height:60vh;min-width:0}
+
+    /* ===== YO QUIERO ===== */
+    .wrap{max-width:1100px;width:95%;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:0 0 20px rgba(0,0,0,.06)}
+
+    /* FILA FIJA DE 3 PICTOGRAMAS SIEMPRE (también en celular) */
+    .row3{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:10px;
+      align-items:stretch;
+    }
+
+    .picto{
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+      padding:8px;border:2px solid #ffb302;background:#fff;border-radius:14px;
+      transition:transform .12s ease, box-shadow .12s ease; cursor:pointer;
+      min-width:0;
+    }
+    .picto:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+    .picto img{
+      width:clamp(64px, 18vw, 140px);
+      height:clamp(64px, 18vw, 140px);
+      object-fit:contain
+    }
+    .picto .lbl{
+      font-weight:900;
+      font-size:clamp(.85rem, 2.8vw, 1rem);
+      color:#000;text-align:center
+    }
+
+    /* Marco “página” con flip para la 3ª imagen */
+    .page{perspective:1000px}
+    .page-inner{transform-style:preserve-3d;transition:transform .6s ease}
+    .page.flip .page-inner{transform:rotateY(-180deg)}
+
+    .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 4px}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer}
+    .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .btn.accent{background:var(--accent);color:#063e2f;border-color:var(--accent)}
+    .btn.ghost{background:transparent}
+
+    /* Mini-controles */
+    .mini{
+      display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:10px 0 2px;
+      font-weight:800;font-size:.9rem;color:var(--muted);
+    }
+    .mini input[type="checkbox"]{transform:scale(1.1)}
+
+    /* Grilla con pictogramas (MUY chicos) */
+    .options{
+      display:grid;grid-template-columns:repeat(10,minmax(0,1fr));
+      gap:8px;margin-top:15px
+    }
+    @media (max-width:900px){.options{grid-template-columns:repeat(5,1fr)}}
+    @media (max-width:600px){.options{grid-template-columns:repeat(4,1fr)}}
+    @media (max-width:420px){.options{grid-template-columns:repeat(3,1fr)}}
+
+    .opt{
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+      padding:6px;border:1px solid var(--border);background:#fff;border-radius:12px;
+      cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .opt:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .opt[data-active="true"]{outline:3px solid var(--focus)}
+    .opt img{width:44px;height:44px;object-fit:contain;pointer-events:none}
+    .opt .cap{font-weight:900;font-size:.8rem;color:#000;text-align:center;line-height:1.05}
+    @media (max-width:768px){
+      .opt img{width:40px;height:40px}
+      .opt .cap{font-size:.75rem}
+    }
+
+    /* Drawer Config (voz/tema) */
+    .drawer{position:fixed;top:var(--topbar);right:0;width:320px;height:calc(100% - var(--topbar));background:var(--card);border-left:1px solid var(--border);box-shadow:-6px 0 24px rgb(0 0 0 / 10%);transform:translateX(100%);transition:transform .25s ease;z-index:99;display:flex;flex-direction:column}
+    .drawer.open{transform:translateX(0)}
+    .drawer h3{margin:12px;font-size:16px}
+    .drawer .content{padding:0 12px 12px;overflow:auto;display:grid;gap:10px}
+    .ctrl label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:700}
+    .ctrl input[type="range"],.ctrl select{width:100%}
+    .radio-row{display:flex;flex-wrap:wrap;gap:8px}
+    .radio-row label{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--border);border-radius:999px;cursor:pointer;font-size:12px;font-weight:700}
+    .drawer .foot{margin-top:auto;padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px}
+
+    /* Toggles */
+    .toggle{
+      position:fixed; top:15%; transform:translateY(-50%);
+      z-index:1001; background:var(--primary); color:#fff; border:none; border-radius:10px 0 0 10px;
+      width:30px; height:40px; cursor:pointer; box-shadow:-2px 2px 10px rgb(0 0 0 / 18%); font-size:16px; font-weight:900;
+    }
+    .toggle.right{right:max(6px,env(safe-area-inset-right))}
+    .toggle.left{left:max(6px,env(safe-area-inset-left));border-radius:0 10px 10px 0;display:none}
+    @media (max-width:968px){.toggle.left{display:block}}
+    .toggle span{display:block}
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar" role="banner">
+    <div class="toprow">
+      <div class="brand"><div class="logo">PC</div> PictoComunica Pro</div>
+      <div class="spacer"></div>
+      <button class="topbtn primary" aria-label="Reproducir frase" id="playTop">▶️ Reproducir</button>
+      <div class="spacer"></div>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout" role="main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Secciones" id="sidebar">
+      <div class="sectionTitle">Secciones</div>
+      <div class="seclist" id="secList">
+        <a class="chip" href="index.html"><div class="ico c1">🏠</div> Panel</a>
+        <a class="chip" href="yoquiero.html"><div class="ico c5">❤️</div> Yo quiero</a>
+        <a class="chip" href="rutina.html"><div class="ico c5">🗓️</div> Rutinas</a>
+        <a class="chip" href="numeros.html"><div class="ico c7">🔢</div> Números</a>
+        <a class="chip" href="letras.html"><div class="ico c6">🔤</div> Letras</a>
+        <a class="chip" href="familia.html"><div class="ico c8">👨‍👩‍👧</div> Familia</a>
+        <a class="chip" href="autoreg.html"><div class="ico c3">🧘</div> Autorregulación</a>
+        <a class="chip" href="juego.html"><div class="ico c2">🎮</div> Juego</a>
+      </div>
+    </aside>
+  
+    <!-- CONTENIDO -->
+    <section class="main">
+      <!-- Controles -->
+      <div class="controls">
+        <button class="btn primary" id="playBtn" type="button">▶️ Reproducir</button>
+        <button class="btn" id="nextBtn" type="button">➡️ Siguiente</button>
+        <button class="btn accent" id="randBtn" type="button">🎲 Aleatorio</button>
+      </div>
+
+      <!-- Mini-controles (hablar al elegir / modo auto) -->
+      <div class="mini">
+        <label><input type="checkbox" id="speakOnSelect"> Hablar al elegir</label>
+        <label><input type="checkbox" id="autoMode"> Auto (aleatorio)</label>
+        <span>cada</span>
+        <input id="autoSecs" type="number" min="2" max="20" step="1" value="4" style="width:56px;padding:6px;border:1px solid var(--border);border-radius:8px"/>
+        <span>seg</span>
+      </div>
+
+      <div class="wrap">
+        <!-- Tres pictos (SIEMPRE visibles en 3 columnas) -->
+        <div class="row3" aria-live="polite">
+          <!-- YO -->
+          <div class="picto" id="pyo" data-role="fixed">
+            <img src="./imagenes/portada/yo.png" alt="Yo">
+            <div class="lbl">YO</div>
+          </div>
+
+          <!-- QUIERO -->
+          <div class="picto" id="pquiero" data-role="fixed">
+            <img src="./imagenes/portada/quiero.png" alt="Quiero">
+            <div class="lbl">QUIERO</div>
+          </div>
+
+          <!-- DINÁMICO con marco “página” -->
+          <div class="page" id="page">
+            <div class="picto page-inner" id="pdyn">
+              <img id="dynImg" src="./imagenes/portada/bano.png" alt="Ir al baño">
+              <div class="lbl" id="dynLbl">IR AL BAÑO</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opciones (pictogramas muy chicos) -->
+        <div class="options" id="options"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Flechas laterales -->
+  <button class="toggle left"  id="leftToggle"  aria-controls="sidebar"      aria-expanded="false" title="Abrir secciones">❯</button>
+  <button class="toggle right" id="rightToggle" aria-controls="configDrawer" aria-expanded="false" title="Abrir configuración">❮</button>
+
+  <!-- Drawer Config -->
+  <aside id="configDrawer" class="drawer" aria-label="Configuración">
+    <h3>⚙️ Configuración</h3>
+    <div class="content">
+      <div class="ctrl">
+        <label for="voiceSelect">Voz / Idioma</label>
+        <select id="voiceSelect"></select>
+      </div>
+      <div class="ctrl">
+        <label for="rate">Velocidad</label>
+        <input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1" />
+      </div>
+      <div class="ctrl">
+        <label for="pitch">Tono</label>
+        <input id="pitch" type="range" min="0.8" max="1.2" step="0.05" value="1" />
+      </div>
+      <div class="ctrl">
+        <label for="volume">Volumen</label>
+        <input id="volume" type="range" min="0.1" max="1" step="0.05" value="1" />
+      </div>
+      <div class="ctrl">
+        <label>Tema</label>
+        <div class="radio-row" id="themeRow">
+          <label><input type="radio" name="theme" value="light" checked> Claro</label>
+          <label><input type="radio" name="theme" value="dark"> Oscuro</label>
+          <label><input type="radio" name="theme" value="contrast"> Alto contraste</label>
+          <label><input type="radio" name="theme" value="pastel"> Pastel</label>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="resetBtn" type="button">Restablecer</button>
+      <button class="btn primary" id="closeDrawer" type="button">Listo</button>
+    </div>
+  </aside>
+
+  <script>
+    // ===== Navegación lateral / Drawer
+    const sidebar     = document.getElementById('sidebar');
+    const leftToggle  = document.getElementById('leftToggle');
+    const rightToggle = document.getElementById('rightToggle');
+    const drawer      = document.getElementById('configDrawer');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const secList     = document.getElementById('secList');
+
+    function toggleSidebar(ev){ ev?.preventDefault?.(); const open = !sidebar.classList.contains('open'); sidebar.classList.toggle('open', open); leftToggle.setAttribute('aria-expanded', String(open)); }
+    function toggleDrawer(ev){ ev?.preventDefault?.(); const open = !drawer.classList.contains('open'); drawer.classList.toggle('open', open); rightToggle.setAttribute('aria-expanded', String(open)); }
+    leftToggle?.addEventListener('click', toggleSidebar);
+    rightToggle?.addEventListener('click', toggleDrawer);
+    closeDrawer?.addEventListener('click', ()=>{ drawer.classList.remove('open'); rightToggle.setAttribute('aria-expanded','false'); if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
+    secList?.addEventListener('click', (ev)=>{ const link = ev.target.closest('a.chip'); if(!link) return; if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
+
+    // ===== Voz + Tema
+    (function(){
+      const voiceSelect = document.getElementById('voiceSelect');
+      const rateEl  = document.getElementById('rate');
+      const pitchEl = document.getElementById('pitch');
+      const volEl   = document.getElementById('volume');
+      const themeRow= document.getElementById('themeRow');
+
+      const store = {
+        get k(){ return JSON.parse(localStorage.getItem('pc_speech')||'{}'); },
+        set(obj){ localStorage.setItem('pc_speech', JSON.stringify(Object.assign(this.k,obj))); }
+      };
+
+      const SpeechEngine = {
+        voices: [],
+        opts: {
+          voiceURI: store.k.voiceURI || null,
+          rate:  parseFloat(store.k.rate  ?? rateEl?.value ?? 1) || 1,
+          pitch: parseFloat(store.k.pitch ?? pitchEl?.value ?? 1) || 1,
+          volume:parseFloat(store.k.volume?? volEl?.value ?? 1) || 1
+        },
+        refreshVoices(){
+          if(!('speechSynthesis' in window)) return;
+          const raw = window.speechSynthesis.getVoices();
+          const es  = raw.filter(v=>/^es[-_]/i.test(v.lang));
+          const rest= raw.filter(v=>!/^es[-_]/i.test(v.lang));
+          const seen = new Set();
+          this.voices = es.concat(rest).filter(v=>{ if(seen.has(v.voiceURI)) return false; seen.add(v.voiceURI); return true; });
+          if(voiceSelect){
+            voiceSelect.innerHTML = this.voices.map(v=>`<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`).join('');
+            const want = this.voices.find(v=>v.voiceURI===this.opts.voiceURI)?.voiceURI || this.voices[0]?.voiceURI || '';
+            voiceSelect.value = want; this.opts.voiceURI = want; store.set({voiceURI: want});
+          }
+        },
+        speak(text){
+          if(!('speechSynthesis' in window) || !text) return;
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          const voice = this.voices.find(v=>v.voiceURI===this.opts.voiceURI);
+          if(voice){ u.voice = voice; u.lang = voice.lang; } else { u.lang = 'es-ES'; }
+          u.rate = this.opts.rate; u.pitch = this.opts.pitch; u.volume = this.opts.volume;
+          window.speechSynthesis.speak(u);
+        }
+      };
+      window.speak = (t)=> SpeechEngine.speak(t);
+
+      // Persistencia sliders
+      const clamp=(n,min,max)=>{n=parseFloat(n);return Math.min(max,Math.max(min,n));};
+      ['input','change'].forEach(evt=>{
+        rateEl?.addEventListener(evt, ()=>{ SpeechEngine.opts.rate   = clamp(rateEl.value,0.7,1.4); store.set({rate:SpeechEngine.opts.rate}); });
+        pitchEl?.addEventListener(evt,()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); });
+        volEl?.addEventListener(evt,  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); });
+      });
+
+      voiceSelect?.addEventListener('change', ()=>{ SpeechEngine.opts.voiceURI = voiceSelect.value; store.set({voiceURI:voiceSelect.value}); });
+
+      if('speechSynthesis' in window){
+        SpeechEngine.refreshVoices();
+        window.speechSynthesis.onvoiceschanged = ()=> SpeechEngine.refreshVoices();
+      }
+
+      // Tema
+      const savedTheme = localStorage.getItem('pc_theme');
+      if(savedTheme){
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeRow?.querySelector(`input[value="${savedTheme}"]`)?.setAttribute('checked','checked');
+      }
+      themeRow?.addEventListener('change', (e)=>{
+        const v = e.target.value;
+        document.documentElement.setAttribute('data-theme', v);
+        localStorage.setItem('pc_theme', v);
+      });
+    })();
+
+    // ===== LÓGICA "YO QUIERO"
+    const dynImg = document.getElementById('dynImg');
+    const dynLbl = document.getElementById('dynLbl');
+    const page   = document.getElementById('page');
+    const pdyn   = document.getElementById('pdyn');
+    const pyo    = document.getElementById('pyo');
+    const pquiero= document.getElementById('pquiero');
+    const playBtn= document.getElementById('playBtn');
+    const playTop= document.getElementById('playTop');
+    const nextBtn= document.getElementById('nextBtn');
+    const randBtn= document.getElementById('randBtn');
+    const optionsBox = document.getElementById('options');
+
+    const speakOnSelectEl = document.getElementById('speakOnSelect');
+    const autoModeEl  = document.getElementById('autoMode');
+    const autoSecsEl  = document.getElementById('autoSecs');
+
+    const LS_KEY = 'pc_yoquiero_v2';
+
+    const options = [
+      { txt:'IR AL BAÑO',  img:'./imagenes/portada/bano.png' },
+      { txt:'GALLETAS',    img:'./imagenes/yoquiero/galletas.png' },
+      { txt:'CHOCOLATE',   img:'./imagenes/yoquiero/chocolate.png' },
+      { txt:'MANZANA',     img:'./imagenes/yoquiero/manzana.png' },
+      { txt:'JUGAR',       img:'./imagenes/yoquiero/jugar.png' },
+      { txt:'AGUA',        img:'./imagenes/yoquiero/agua.png' },
+      { txt:'MAMÁ',        img:'./imagenes/yoquiero/mama.png' },
+      { txt:'PAPÁ',        img:'./imagenes/yoquiero/papa.png' },
+      { txt:'DORMIR',      img:'./imagenes/yoquiero/dormir.png' },
+      { txt:'ABRAZO',      img:'./imagenes/yoquiero/abrazo.png' },
+       { txt:'IR AL BAÑO',  img:'./imagenes/portada/bano.png' },
+      { txt:'GALLETAS',    img:'./imagenes/yoquiero/galletas.png' },
+      { txt:'CHOCOLATE',   img:'./imagenes/yoquiero/chocolate.png' },
+      { txt:'MANZANA',     img:'./imagenes/yoquiero/manzana.png' },
+      { txt:'JUGAR',       img:'./imagenes/yoquiero/jugar.png' },
+      { txt:'AGUA',        img:'./imagenes/yoquiero/agua.png' },
+      { txt:'MAMÁ',        img:'./imagenes/yoquiero/mama.png' },
+      { txt:'PAPÁ',        img:'./imagenes/yoquiero/papa.png' },
+      { txt:'DORMIR',      img:'./imagenes/yoquiero/dormir.png' },
+      { txt:'ABRAZO',      img:'./imagenes/yoquiero/abrazo.png' }
+    ];
+
+    let idx = 0;
+    let autoTimer = null;
+
+    function save(){
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        idx,
+        speakOnSelect: !!speakOnSelectEl.checked,
+        auto: !!autoModeEl.checked,
+        secs: parseInt(autoSecsEl.value)||4
+      }));
+    }
+    function load(){
+      try{
+        const raw = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+        if(!raw) return;
+        if(Number.isInteger(raw.idx)) idx = Math.min(Math.max(raw.idx,0), options.length-1);
+        speakOnSelectEl.checked = !!raw.speakOnSelect;
+        autoModeEl.checked = !!raw.auto;
+        if(raw.secs) autoSecsEl.value = raw.secs;
+      }catch{}
+    }
+
+    function flipOnce(){
+      page.classList.add('flip');
+      setTimeout(()=> page.classList.remove('flip'), 620);
+    }
+
+    function setOption(i, maybeSpeak=false){
+      idx = ((i % options.length) + options.length) % options.length;
+      const o = options[idx];
+      // Efecto flip
+      flipOnce();
+      // Actualizar imagen/etiqueta
+      dynImg.src = o.img;
+      dynImg.alt = o.txt;
+      dynLbl.textContent = o.txt;
+      highlightActive();
+      save();
+
+      const autoOn = autoModeEl.checked;
+      const speakOnSelect = speakOnSelectEl.checked;
+      if((autoOn || (maybeSpeak && speakOnSelect)) && typeof window.speak==='function'){
+        window.speak(phrase());
+      }
+    }
+
+    function next(){ setOption(idx+1, true); }
+    function randomOption(){
+      let r = Math.floor(Math.random()*options.length);
+      if(r === idx) r = (r+1) % options.length;
+      setOption(r, true);
+    }
+
+    function phrase(){ return `YO QUIERO ${options[idx].txt}`; }
+    function speakPhrase(){ if(typeof window.speak==='function') window.speak(phrase()); }
+
+    function highlightActive(){
+      const buttons = optionsBox.querySelectorAll('.opt');
+      buttons.forEach((b, i)=> b.dataset.active = String(i===idx));
+    }
+
+    function buildOptions(){
+      optionsBox.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      options.forEach((o,i)=>{
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'opt';
+        card.setAttribute('aria-label', o.txt);
+
+        const img = document.createElement('img');
+        img.src = o.img;
+        img.alt = o.txt;
+
+        const cap = document.createElement('span');
+        cap.className = 'cap';
+        cap.textContent = o.txt;
+
+        card.appendChild(img);
+        card.appendChild(cap);
+
+        card.addEventListener('click', ()=>{ setOption(i, true); }); // cambia imagen; habla solo si está permitido
+        frag.appendChild(card);
+      });
+      optionsBox.appendChild(frag);
+      highlightActive();
+    }
+
+    // Auto modo
+    function startAuto(){
+      stopAuto();
+      const secs = Math.max(2, Math.min(20, parseInt(autoSecsEl.value)||4));
+      autoSecsEl.value = secs;
+      autoTimer = setInterval(()=> randomOption(), secs*1000);
+    }
+    function stopAuto(){
+      if(autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+    }
+
+    // Pre-carga de imágenes para fluidez
+    (function preload(){ options.forEach(o=>{ const im=new Image(); im.src=o.img; }); })();
+
+    // eventos de pictos principales
+    [pdyn, pyo, pquiero].forEach(el => el.addEventListener('click', ()=>{/* no habla salvo botón ▶️ o si speakOnSelect */}));
+    playBtn.addEventListener('click', speakPhrase);
+    playTop.addEventListener('click', speakPhrase);
+    nextBtn.addEventListener('click', next);
+    randBtn.addEventListener('click', randomOption);
+
+    // eventos mini-controles
+    speakOnSelectEl.addEventListener('change', save);
+    autoSecsEl.addEventListener('change', ()=>{ if(autoModeEl.checked){ startAuto(); } save(); });
+    autoModeEl.addEventListener('change', ()=>{
+      if(autoModeEl.checked){ startAuto(); }
+      else{ stopAuto(); }
+      save();
+    });
+
+    // init
+    load();
+    buildOptions();
+    setOption(idx, false);
+    if(autoModeEl.checked){ startAuto(); }
+  </script>
+</body>
+</html>
