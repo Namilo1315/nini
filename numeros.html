@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PictoComunica Pro — Números</title>
+  <meta name="theme-color" content="#2563eb"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <style>
+    :root{
+      --bg:#ffffff; --card:#ffffff; --text:#0b1220; --muted:#475569;
+      --primary:#2563eb; --primaryDark:#1e3a8a; --accent:#10b981;
+      --border:#e2e8f0; --focus:#93c5fd;
+      --topbar:60px; --rail:180px; --gap:10px;
+      --shadow:0 5px 15px rgba(0,0,0,.08);
+
+      /* Paleta de esta sección */
+      --heroA:#7c3aed;      /* se mantiene el header violeta */
+      --heroB:#a855f7;
+      --boxBorder:#ffb347;  /* 🔶 borde naranja como Rutinas */
+      --numColor:#000000;   /* 🔶 números negros */
+      --chipDot:#ffb347;    /* puntitos en naranja suave */
+    }
+
+    [data-theme="dark"]{
+      --bg:#0f172a; --card:#0b1220; --text:#f8fafc; --muted:#cbd5e1;
+      --primary:#60a5fa; --primaryDark:#1d4ed8; --accent:#22c55e;
+      --border:#1f2937; --focus:#60a5fa;
+
+      --heroA:#6d28d9;
+      --heroB:#a855f7;
+      --boxBorder:#f59e0b;  /* naranja dorado en oscuro */
+      --numColor:#ffffff;
+      --chipDot:#fbbf24;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;overflow-x:hidden}
+
+    /* Topbar global */
+    .topbar{position:fixed;inset:0 0 auto 0;height:var(--topbar);z-index:100;background:linear-gradient(90deg,var(--primary),var(--primaryDark));color:#fff;display:flex;align-items:center;box-shadow:0 2px 8px rgb(0 0 0/12%)}
+    .toprow{max-width:1400px;margin:0 auto;width:100%;padding:8px 12px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:900;min-width:0}
+    .logo{width:36px;height:36px;border-radius:10px;background:#fff;color:var(--primaryDark);display:grid;place-items:center;font-weight:900}
+    .topbtn{border:none;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;white-space:nowrap;background:rgb(255 255 255 / 18%);color:#fff}
+    .topbtn.primary{justify-self:center}
+    @media (max-width:600px){.toprow{padding:6px 8px;gap:6px}.logo{width:30px;height:30px}.topbtn{padding:8px 10px;font-size:12px}}
+
+    /* Layout */
+    .layout{max-width:1400px;margin:calc(var(--topbar) + 12px) auto 14px;padding:0 10px;display:grid;grid-template-columns:var(--rail) 1fr;gap:var(--gap)}
+    .layout>*{min-width:0}
+    @media (max-width:968px){ .layout{grid-template-columns:1fr} }
+    @media (max-width:768px){ :root{--rail:100%} .layout{grid-template-columns:1fr} }
+
+    /* Sidebar */
+    .sidebar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;height:max-content;position:sticky;top:calc(var(--topbar) + 10px);min-width:0;overflow:auto;z-index:101;max-height:calc(100vh - var(--topbar) - 20px)}
+    .sectionTitle{margin:6px 0 8px;color:var(--muted);font-weight:900;font-size:12px;letter-spacing:.3px}
+    .seclist{display:flex;flex-direction:column;gap:8px}
+    .chip{width:100%;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-weight:900;font-size:13px;transition:transform .06s ease;text-decoration:none;color:inherit}
+    .chip:hover{transform:translateY(-1px)}
+    .chip .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px}
+    .c1{background:#e0f2fe}.c2{background:#f1f5f9}.c3{background:#fff7ed}.c4{background:#ecfeff}.c5{background:#fef3c7}.c6{background:#fce7f3}.c7{background:#f0fdf4}.c8{background:#ede9fe}
+    @media (max-width:968px){
+      .sidebar{position:fixed;left:0;top:var(--topbar);bottom:0;width:280px;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 18px rgb(0 0 0 / 18%)}
+      .sidebar.open{transform:translateX(0)}
+    }
+
+    .main{min-height:60vh;min-width:0}
+
+    /* ===== Sección Números ===== */
+    .wrap{max-width:1200px;width:95%;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 10px 16px;box-shadow:0 0 20px rgba(0,0,0,.06)}
+    .hero{
+      background:linear-gradient(90deg, var(--heroA), var(--heroB));
+      color:#fff; text-align:center; border-radius:14px; padding:10px 12px; margin:0 0 12px;
+      display:flex; align-items:center; justify-content:center; gap:12px; position:relative; overflow:hidden;
+    }
+    .hero h1{font-size:clamp(1.1rem, 4.2vw, 2rem);margin:0;font-weight:900;letter-spacing:.5px}
+
+    /* Grid tarjetas */
+    .number-container{
+      display:grid; grid-template-columns:repeat(5,1fr);
+      gap:16px; width:100%; margin:0 auto; padding:6px;
+    }
+    @media (max-width:900px){ .number-container{grid-template-columns:repeat(4,1fr)} }
+    @media (max-width:700px){ .number-container{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:480px){ .number-container{grid-template-columns:repeat(2,1fr); gap:10px} }
+
+    .number-box{
+      background:linear-gradient(145deg,#ffffff,#ffffff);
+      border:4px solid var(--boxBorder);           /* 🔶 borde naranja */
+      border-radius:18px;
+      padding:12px;
+      text-align:center;
+      cursor:pointer;
+      transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow:0 10px 18px rgba(0,0,0,0.06);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+      min-height:160px;
+    }
+    .number-box:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 18px 30px rgba(0,0,0,0.10) }
+    @media (max-width:480px){
+      .number-box{ min-height:120px; border-radius:14px; padding:10px }
+    }
+
+    .number{
+      font-size:clamp(46px, 7.2vw, 78px);
+      color:var(--numColor);                        /* 🔶 número negro */
+      font-weight:900; line-height:1;
+      text-shadow:none;
+      user-select:none;
+    }
+
+    .name{
+      font-size:clamp(14px,3.2vw,16px);
+      font-weight:900;
+      color:#111827; /* casi negro, buena legibilidad */
+      letter-spacing:.4px;
+    }
+
+    /* Cantidades (puntitos) */
+    .dots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+    .dot{
+      width:14px;height:14px;border-radius:50%;background:var(--chipDot); /* 🔶 naranja */
+      box-shadow:0 1px 0 rgba(0,0,0,.12);
+    }
+    @media (max-width:480px){ .dot{width:12px;height:12px} }
+
+    /* Flechas laterales */
+    .toggle{
+      position:fixed; top:15%; transform:translateY(-50%);
+      z-index:1001; background:var(--primary); color:#fff; border:none; border-radius:10px 0 0 10px;
+      width:30px; height:40px; cursor:pointer; box-shadow:-2px 2px 10px rgb(0 0 0 / 18%); font-size:16px; font-weight:900;
+    }
+    .toggle.right{right:max(6px,env(safe-area-inset-right))}
+    .toggle.left{left:max(6px,env(safe-area-inset-left));border-radius:0 10px 10px 0;display:none}
+    @media (max-width:968px){.toggle.left{display:block}}
+    .toggle span{display:block}
+
+    /* Drawer (voz/tema) */
+    .drawer{position:fixed;top:var(--topbar);right:0;width:320px;height:calc(100% - var(--topbar));background:var(--card);border-left:1px solid var(--border);box-shadow:-6px 0 24px rgb(0 0 0 / 10%);transform:translateX(100%);transition:transform .25s ease;z-index:99;display:flex;flex-direction:column}
+    .drawer.open{transform:translateX(0)}
+    .drawer h3{margin:12px;font-size:16px}
+    .drawer .content{padding:0 12px 12px;overflow:auto;display:grid;gap:10px}
+    .ctrl label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:700}
+    .ctrl input[type="range"],.ctrl select{width:100%}
+    .radio-row{display:flex;flex-wrap:wrap;gap:8px}
+    .radio-row label{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--border);border-radius:999px;cursor:pointer;font-size:12px;font-weight:700}
+    .drawer .foot{margin-top:auto;padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px}
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar" role="banner">
+    <div class="toprow">
+      <div class="brand"><div class="logo">PC</div> PictoComunica Pro</div>
+      <div class="spacer"></div>
+      <button class="topbtn primary" type="button" aria-disabled="true">🔢 NÚMEROS</button>
+      <div class="spacer"></div>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout" role="main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Secciones" id="sidebar">
+      <div class="sectionTitle">Secciones</div>
+      <div class="seclist" id="secList">
+        <a class="chip" href="index.html"><div class="ico c1">🏠</div> Panel</a>
+        <a class="chip" href="yoquiero.html"><div class="ico c5">❤️</div> Yo quiero</a>
+        <a class="chip" href="rutina.html"><div class="ico c5">🗓️</div> Rutinas</a>
+        <a class="chip" href="numeros.html"><div class="ico c7">🔢</div> Números</a>
+        <a class="chip" href="letras.html"><div class="ico c6">🔤</div> Letras</a>
+        <a class="chip" href="familia.html"><div class="ico c8">👨‍👩‍👧</div> Familia</a>
+        <a class="chip" href="autoreg.html"><div class="ico c3">🧘</div> Autorregulación</a>
+        <a class="chip" href="juego.html"><div class="ico c2">🎮</div> Juego</a>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <section class="main">
+      <div class="wrap">
+        <!-- HERO -->
+        
+
+        <!-- GRID 1..10 -->
+        <div class="number-container" id="numberContainer"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Flechas laterales -->
+  <button class="toggle left"  id="leftToggle"  aria-controls="sidebar"      aria-expanded="false" title="Abrir secciones">❯</button>
+  <button class="toggle right" id="rightToggle" aria-controls="configDrawer" aria-expanded="false" title="Abrir configuración">❮</button>
+
+  <!-- Drawer Config -->
+  <aside id="configDrawer" class="drawer" aria-label="Configuración">
+    <h3>⚙️ Configuración</h3>
+    <div class="content">
+      <div class="ctrl">
+        <label for="voiceSelect">Voz / Idioma</label>
+        <select id="voiceSelect"></select>
+      </div>
+      <div class="ctrl">
+        <label for="rate">Velocidad</label>
+        <input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1" />
+      </div>
+      <div class="ctrl">
+        <label for="pitch">Tono</label>
+        <input id="pitch" type="range" min="0.8" max="1.2" step="0.05" value="1" />
+      </div>
+      <div class="ctrl">
+        <label for="volume">Volumen</label>
+        <input id="volume" type="range" min="0.1" max="1" step="0.05" value="1" />
+      </div>
+      <div class="ctrl">
+        <label>Tema</label>
+        <div class="radio-row" id="themeRow">
+          <label><input type="radio" name="theme" value="light" checked> Claro</label>
+          <label><input type="radio" name="theme" value="dark"> Oscuro</label>
+          <label><input type="radio" name="theme" value="contrast"> Alto contraste</label>
+          <label><input type="radio" name="theme" value="pastel"> Pastel</label>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="resetBtn" type="button">Restablecer</button>
+      <button class="btn primary" id="closeDrawer" type="button">Listo</button>
+    </div>
+  </aside>
+
+  <script>
+    // ===== Flechas laterales / drawer
+    const sidebar     = document.getElementById('sidebar');
+    const leftToggle  = document.getElementById('leftToggle');
+    const rightToggle = document.getElementById('rightToggle');
+    const drawer      = document.getElementById('configDrawer');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const secList     = document.getElementById('secList');
+
+    function toggleSidebar(ev){ ev?.preventDefault?.(); const open = !sidebar.classList.contains('open'); sidebar.classList.toggle('open', open); leftToggle.setAttribute('aria-expanded', String(open)); }
+    function toggleDrawer(ev){ ev?.preventDefault?.(); const open = !drawer.classList.contains('open'); drawer.classList.toggle('open', open); rightToggle.setAttribute('aria-expanded', String(open)); }
+    leftToggle?.addEventListener('click', toggleSidebar);
+    rightToggle?.addEventListener('click', toggleDrawer);
+    closeDrawer?.addEventListener('click', ()=>{ drawer.classList.remove('open'); rightToggle.setAttribute('aria-expanded','false'); if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
+    secList?.addEventListener('click', (ev)=>{ const link = ev.target.closest('a.chip'); if(!link) return; if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
+
+    // ===== Voz + Tema (compartido)
+    (function(){
+      const voiceSelect = document.getElementById('voiceSelect');
+      const rateEl  = document.getElementById('rate');
+      const pitchEl = document.getElementById('pitch');
+      const volEl   = document.getElementById('volume');
+      const themeRow= document.getElementById('themeRow');
+
+      const store = {
+        get k(){ return JSON.parse(localStorage.getItem('pc_speech')||'{}'); },
+        set(obj){ localStorage.setItem('pc_speech', JSON.stringify(Object.assign(this.k,obj))); }
+      };
+
+      const SpeechEngine = {
+        voices: [],
+        opts: {
+          voiceURI: store.k.voiceURI || null,
+          rate:  parseFloat(store.k.rate  ?? rateEl?.value ?? 1) || 1,
+          pitch: parseFloat(store.k.pitch ?? pitchEl?.value ?? 1) || 1,
+          volume:parseFloat(store.k.volume?? volEl?.value ?? 1) || 1
+        },
+        refreshVoices(){
+          if(!('speechSynthesis' in window)) return;
+          const raw = window.speechSynthesis.getVoices();
+          const es  = raw.filter(v=>/^es[-_]/i.test(v.lang));
+          const rest= raw.filter(v=>!/^es[-_]/i.test(v.lang));
+          const seen = new Set();
+          this.voices = es.concat(rest).filter(v=>{ if(seen.has(v.voiceURI)) return false; seen.add(v.voiceURI); return true; });
+          if(voiceSelect){
+            voiceSelect.innerHTML = this.voices.map(v=>`<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`).join('');
+            const want = this.voices.find(v=>v.voiceURI===this.opts.voiceURI)?.voiceURI || this.voices[0]?.voiceURI || '';
+            voiceSelect.value = want; this.opts.voiceURI = want; store.set({voiceURI: want});
+          }
+        },
+        speak(text){
+          if(!('speechSynthesis' in window) || !text) return;
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          const voice = this.voices.find(v=>v.voiceURI===this.opts.voiceURI);
+          if(voice){ u.voice = voice; u.lang = voice.lang; } else { u.lang = 'es-ES'; }
+          u.rate = this.opts.rate; u.pitch = this.opts.pitch; u.volume = this.opts.volume;
+          window.speechSynthesis.speak(u);
+        }
+      };
+      window.speak = (t)=> SpeechEngine.speak(t);
+
+      if('speechSynthesis' in window){
+        SpeechEngine.refreshVoices();
+        window.speechSynthesis.onvoiceschanged = ()=> SpeechEngine.refreshVoices();
+      }
+
+      // Tema guardado
+      const savedTheme = localStorage.getItem('pc_theme');
+      if(savedTheme){
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeRow?.querySelector(`input[value="${savedTheme}"]`)?.setAttribute('checked','checked');
+      }
+      themeRow?.addEventListener('change', (e)=>{
+        const v = e.target.value;
+        document.documentElement.setAttribute('data-theme', v);
+        localStorage.setItem('pc_theme', v);
+      });
+    })();
+
+    // ===== Números 1..10 (negro + borde naranja + nombre)
+    const numberContainer = document.getElementById('numberContainer');
+    const numberWords = ['UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ'];
+
+    function say(txt){
+      if(typeof window.speak==='function'){ window.speak(txt); }
+      else{ const u = new SpeechSynthesisUtterance(txt); u.lang='es-ES'; speechSynthesis.speak(u); }
+    }
+
+    function makeDots(n){
+      const row = document.createElement('div');
+      row.className = 'dots';
+      for(let i=0;i<n;i++){
+        const d = document.createElement('span');
+        d.className = 'dot';
+        row.appendChild(d);
+      }
+      return row;
+    }
+
+    function makeBox(i){
+      const box = document.createElement('div');
+      box.className = 'number-box';
+      box.setAttribute('role','group');
+      box.setAttribute('aria-label', `Número ${i}: ${numberWords[i-1]}`);
+
+      const number = document.createElement('div');
+      number.className = 'number';
+      number.textContent = i;
+
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = numberWords[i-1];
+
+      const dots = makeDots(i);
+
+      box.appendChild(number);
+      box.appendChild(name);   /* 🔶 nombre visible */
+      box.appendChild(dots);
+
+      const speakNumber = ()=>{
+        say(numberWords[i-1]);
+        box.style.transform='scale(1.04)';
+        setTimeout(()=> box.style.transform='', 160);
+      };
+
+      number.addEventListener('click', speakNumber);
+      name  .addEventListener('click', speakNumber);
+      box.addEventListener('click', (e)=>{ if(!e.target.closest('.number') && !e.target.closest('.name')) speakNumber(); });
+
+      return box;
+    }
+
+    (function build(){
+      const frag = document.createDocumentFragment();
+      for(let i=1;i<=10;i++) frag.appendChild(makeBox(i));
+      numberContainer.appendChild(frag);
+    })();
+  </script>
+</body>
+</html>

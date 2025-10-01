@@ -117,7 +117,7 @@
     /* Grilla con pictogramas (MUY chicos) */
     .options{
       display:grid;grid-template-columns:repeat(10,minmax(0,1fr));
-      gap:8px;margin-top:15px
+      gap:8px;margin-top:15px; color: #10b981;
     }
     @media (max-width:900px){.options{grid-template-columns:repeat(5,1fr)}}
     @media (max-width:600px){.options{grid-template-columns:repeat(4,1fr)}}
@@ -165,7 +165,7 @@
   <!-- TOPBAR -->
   <div class="topbar" role="banner">
     <div class="toprow">
-      <div class="brand"><div class="logo">PC</div> PictoComunica Pro</div>
+      <div class="brand"><div class="logo">PC</div> PictoComunica</div>
       <div class="spacer"></div>
       <button class="topbtn primary" aria-label="Reproducir frase" id="playTop">▶️ Reproducir</button>
       <div class="spacer"></div>
@@ -212,7 +212,7 @@
         <div class="row3" aria-live="polite">
           <!-- YO -->
           <div class="picto" id="pyo" data-role="fixed">
-            <img src="./imagenes/portada/yo.png" alt="Yo">
+            <img src="./imagenes/portada/yon.png" alt="Yo">
             <div class="lbl">YO</div>
           </div>
 
@@ -387,26 +387,17 @@
     const LS_KEY = 'pc_yoquiero_v2';
 
     const options = [
+      { txt:'ABRAZO',      img:'./imagenes/portada/abrazo.png' },
       { txt:'IR AL BAÑO',  img:'./imagenes/portada/bano.png' },
-      { txt:'GALLETAS',    img:'./imagenes/yoquiero/galletas.png' },
-      { txt:'CHOCOLATE',   img:'./imagenes/yoquiero/chocolate.png' },
-      { txt:'MANZANA',     img:'./imagenes/yoquiero/manzana.png' },
-      { txt:'JUGAR',       img:'./imagenes/yoquiero/jugar.png' },
-      { txt:'AGUA',        img:'./imagenes/yoquiero/agua.png' },
-      { txt:'MAMÁ',        img:'./imagenes/yoquiero/mama.png' },
-      { txt:'PAPÁ',        img:'./imagenes/yoquiero/papa.png' },
-      { txt:'DORMIR',      img:'./imagenes/yoquiero/dormir.png' },
-      { txt:'ABRAZO',      img:'./imagenes/yoquiero/abrazo.png' },
-       { txt:'IR AL BAÑO',  img:'./imagenes/portada/bano.png' },
-      { txt:'GALLETAS',    img:'./imagenes/yoquiero/galletas.png' },
-      { txt:'CHOCOLATE',   img:'./imagenes/yoquiero/chocolate.png' },
-      { txt:'MANZANA',     img:'./imagenes/yoquiero/manzana.png' },
-      { txt:'JUGAR',       img:'./imagenes/yoquiero/jugar.png' },
-      { txt:'AGUA',        img:'./imagenes/yoquiero/agua.png' },
-      { txt:'MAMÁ',        img:'./imagenes/yoquiero/mama.png' },
-      { txt:'PAPÁ',        img:'./imagenes/yoquiero/papa.png' },
-      { txt:'DORMIR',      img:'./imagenes/yoquiero/dormir.png' },
-      { txt:'ABRAZO',      img:'./imagenes/yoquiero/abrazo.png' }
+       { txt:'JUGAR',       img:'./imagenes/portada/jugar.png' },    
+      { txt:'AGUA',        img:'./imagenes/portada/agua.png' },
+      { txt:'MAMÁ',        img:'./imagenes/familia/mama.png' },
+      { txt:'PAPÁ',        img:'./imagenes/familia/papa.png' },
+      { txt:'DORMIR',      img:'./imagenes/portada/dormir.png' },
+        { txt:'COMER',      img:'./imagenes/portada/comer.png' },
+       { txt:'GALLETAS',    img:'./imagenes/portada/galletas.png' },
+       { txt:'FRUTAS',    img:'./imagenes/portada/frutas.png' }
+      
     ];
 
     let idx = 0;
