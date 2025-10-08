@@ -17,9 +17,9 @@
       /* Paleta de esta sección */
       --heroA:#7c3aed;      /* se mantiene el header violeta */
       --heroB:#a855f7;
-      --boxBorder:#ffb347;  /* 🔶 borde naranja como Rutinas */
+      --boxBorder:#f9b556;  /* 🔶 borde naranja como Rutinas */
       --numColor:#000000;   /* 🔶 números negros */
-      --chipDot:#ffb347;    /* puntitos en naranja suave */
+      --chipDot:#fca72f;    /* puntitos en naranja suave */
     }
 
     [data-theme="dark"]{
@@ -312,7 +312,7 @@
 
     // ===== Números 1..10 (negro + borde naranja + nombre)
     const numberContainer = document.getElementById('numberContainer');
-    const numberWords = ['UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ'];
+    const numberWords = ['UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE'];
 
     function say(txt){
       if(typeof window.speak==='function'){ window.speak(txt); }
@@ -365,7 +365,7 @@
 
     (function build(){
       const frag = document.createDocumentFragment();
-      for(let i=1;i<=10;i++) frag.appendChild(makeBox(i));
+      for(let i=1;i<=15;i++) frag.appendChild(makeBox(i));
       numberContainer.appendChild(frag);
     })();
   </script>
