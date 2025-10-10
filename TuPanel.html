@@ -87,8 +87,8 @@
     /* ====== GRID: 12 / 10 / 5 / 4 por fila ====== */
     #panelGrid{ grid-template-columns: repeat(12, minmax(0, 1fr)); }              /* Desktop */
     @media (max-width:1200px){ #panelGrid{ grid-template-columns: repeat(10, minmax(0, 1fr)); } } /* Tablet */
-    @media (max-width:768px){  #panelGrid{ grid-template-columns: repeat(5,  minmax(0, 1fr)); } } /* Celular */
-    @media (max-width:420px){  #panelGrid{ grid-template-columns: repeat(4,  minmax(0, 1fr)); } } /* Celular chico */
+    @media (max-width:768px){  #panelGrid{ grid-template-columns: repeat(6,  minmax(0, 1fr)); } } /* Celular */
+    @media (max-width:420px){  #panelGrid{ grid-template-columns: repeat(5,  minmax(0, 1fr)); } } /* Celular chico */
 
     .card{
       background:var(--card); border:1px solid var(--border); border-radius:10px;
@@ -98,7 +98,8 @@
     .card:hover{ transform:translateY(-2px); box-shadow:0 8px 18px rgb(0 0 0 / 10%); }
 
     /* Tamaños de pictos por breakpoint (achicados en móvil) */
-    .picto{ width:80px; height:80px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden; cursor:pointer }
+    .picto{ width:75px; height:75px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden; cursor:pointer }
+    
     @media (max-width:1200px){ .picto{ width:74px; height:74px } }   /* tablet */
     @media (max-width:768px){  .picto{ width:68px; height:68px } }   /* cel */
     @media (max-width:420px){  .picto{ width:62px; height:62px } }   /* cel chico */
