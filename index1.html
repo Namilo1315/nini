@@ -7,14 +7,14 @@
   <meta name="theme-color" content="#2563eb"/>
   <link rel="manifest" href="manifest.webmanifest"/>
 
- <style>
+<style>
   :root{
     --bg:#ffffff; --card:#ffffff; --text:#0b1220; --muted:#475569;
     --primary:#2563eb; --accent:#10b981; --border:#e2e8f0; --focus:#93c5fd;
     --topbar:60px; --rail:140px; --gap:10px;            /* sidebar + angosto */
     --chip1:#e0f2fe; --chip2:#f1f5f9; --chip3:#fff7ed; --chip4:#ecfeff;
     --chip5:#fef3c7; --chip6:#fce7f3; --chip7:#f0fdf4; --chip8:#ede9fe;
-    --drawer-w: clamp(200px, 28vw, 300px);              /* ancho del drawer */
+    --drawer-w: clamp(180px, 24vw, 240px);              /* ancho del drawer */
   }
   [data-theme="dark"]{
     --bg:#0f172a; --card:#0b1220; --text:#f8fafc; --muted:#cbd5e1;
@@ -102,46 +102,39 @@
   /* Main */
   .main{min-height:60vh; min-width:0}
 
- /* ====== GRID pictos: 12 / 10 / 5 / 4 + tamaños ====== */
-.grid{ display:grid; gap:8px }
+  /* ====== GRID pictos: 12 / 12 / 6 / 4 (como pediste) + tamaños más chicos ====== */
+  .grid{ display:grid; gap:8px }
 
-/* Desktop (≥1200): 12 col */
-#panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }
-.picto{ width:82px; height:82px; }
-.card{ min-height:110px; padding:6px; }
-.lbl{ font-size:11px; }
-
-/* Tablet (768–1199): 10 col */
-@media (min-width:768px) and (max-width:1199px){
+  /* Desktop (≥1200): 12 col */
   #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }
-  .picto{ width:70px; height:70px; }
-  .card{ min-height:70px; padding:6px; }
-  .lbl{ font-size:10.5px; }
-}
+  .card{ background:var(--card); border:1px solid var(--border); border-radius:10px; min-height:96px; padding:5px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; }
+  .picto{ width:76px; height:76px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }
+  .picto img{ width:100%; height:100%; object-fit:contain }
+  .lbl{ font-size:10.5px; line-height:1.1; font-weight:800; color:var(--text) }
 
-/* Móvil medio (481–767): 5 col */
-@media (min-width:481px) and (max-width:767px){
-  #panelGrid{ grid-template-columns:repeat(6,minmax(0,1fr)); }
-  .picto{ width:70px; height:70px; }
-  .card{ min-height:98px; padding:5px; }
-  .lbl{ font-size:10px; }
-}
-
-/* Móvil chico (≤480): 4 col */
-@media (max-width:480px){
-  #panelGrid{ grid-template-columns:repeat(4,minmax(0,1fr)); }
-  .picto{ width:64px; height:64px; }
-  .card{ min-height:92px; padding:4px; }
-  .lbl{ font-size:9.5px; }
-}
-
-
-  .card{
-    background:var(--card); border:1px solid var(--border); border-radius:10px;
-    min-height:108px; padding:3px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+  /* Tablet (768–1199): 12 col (respetado) */
+  @media (min-width:768px) and (max-width:1199px){
+    #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }
+    .card{ min-height:92px; padding:5px; }
+    .picto{ width:68px; height:68px; }
+    .lbl{ font-size:10px; }
   }
-  .picto{ width:94px; height:94px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }  .picto img{ width:100%; height:100%; object-fit:contain }
-  .lbl{ font-size:11px; line-height:1.1; font-weight:800; color:var(--text) }
+
+  /* Móvil medio (481–767): 6 col (respetado) */
+  @media (min-width:481px) and (max-width:767px){
+    #panelGrid{ grid-template-columns:repeat(6,minmax(0,1fr)); }
+    .card{ min-height:86px; padding:4px; }
+    .picto{ width:62px; height:62px; }
+    .lbl{ font-size:9.8px; }
+  }
+
+  /* Móvil chico (≤480): 4 col (respetado) */
+  @media (max-width:480px){
+    #panelGrid{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .card{ min-height:82px; padding:4px; }
+    .picto{ width:56px; height:56px; }
+    .lbl{ font-size:9.4px; }
+  }
 
   .phrase{
     display:flex; flex-wrap:wrap; gap:6px; min-height:46px;
@@ -207,44 +200,6 @@
   .stepper{ display:flex; align-items:center; gap:8px; margin-top:6px }
   .stepper .btn{ padding:6px 10px }
   .stepper .val{ min-width:42px; text-align:center; font-weight:800; font-size:12px; color:var(--muted) }
-  /* === Ajuste de ANCHO del panel de Secciones (más angosto) === */
-:root{
-  /* probá 180–240px; podés subir/bajar estos límites */
-  --drawer-w: clamp(180px, 24vw, 240px);
-}
-
-/* Drawer en todas las pantallas: usa el nuevo ancho, forzando sobre reglas previas */
-body.drawerMode .sidebar{
-  width: var(--drawer-w) !important;
-  max-width: var(--drawer-w) !important;
-}
-
-/* Si tenés reglas específicas de móvil con width:280/300px,
-   esto las pisa cuando se abre (por si quedan activas) */
-@media (max-width: 1024px){
-  body.drawerMode .sidebar{
-    width: var(--drawer-w) !important;
-  }
-}
-
-/* === Compactar contenido interno para que entre mejor === */
-.sidebar{ padding:8px !important; }
-.sectionTitle{ font-size:11px !important; margin:4px 0 6px !important; }
-.chip{
-  grid-template-columns:22px 1fr !important;
-  padding:7px 8px !important;
-  font-size:13.5px !important;
-}
-.chip .ico{
-  width:20px !important; height:20px !important; border-radius:6px;
-  font-size:12px !important;
-}
-
-/* Opcional: hacer más angosto aún en celulares súper chicos */
-@media (max-width: 420px){
-  :root{ --drawer-w: 180px; }  /* sentilo libre de bajarlo a 170/160 si querés */
-}
-
 </style>
 
 </head>
