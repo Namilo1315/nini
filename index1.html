@@ -102,20 +102,39 @@
   /* Main */
   .main{min-height:60vh; min-width:0}
 
-  /* ====== GRID pictos: 12 / 10 / 5 / 4 ====== */
-  .grid{ display:grid; gap:8px }
-  #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }               /* Desktop 12 */
-  @media (min-width:768px) and (max-width:1199px){
-    #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }  
-    .picto{ width:75px; height:75px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }  .picto img{ width:100%; height:100%; object-fit:contain }
-  .lbl{ font-size:11px; line-height:1.1; font-weight:800; color:var(--text) }          /* Tablet 10 */
-  }
-  @media (min-width:481px) and (max-width:767px){
-    #panelGrid{ grid-template-columns:repeat(6,minmax(0,1fr)); }             /* Móvil med 5 */
-  }
-  @media (max-width:480px){
-    #panelGrid{ grid-template-columns:repeat(5,minmax(0,1fr)); }             /* Móvil chico 4 */
-  }
+ /* ====== GRID pictos: 12 / 10 / 5 / 4 + tamaños ====== */
+.grid{ display:grid; gap:8px }
+
+/* Desktop (≥1200): 12 col */
+#panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }
+.picto{ width:82px; height:82px; }
+.card{ min-height:110px; padding:6px; }
+.lbl{ font-size:11px; }
+
+/* Tablet (768–1199): 10 col */
+@media (min-width:768px) and (max-width:1199px){
+  #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }
+  .picto{ width:70px; height:70px; }
+  .card{ min-height:70px; padding:6px; }
+  .lbl{ font-size:10.5px; }
+}
+
+/* Móvil medio (481–767): 5 col */
+@media (min-width:481px) and (max-width:767px){
+  #panelGrid{ grid-template-columns:repeat(6,minmax(0,1fr)); }
+  .picto{ width:70px; height:70px; }
+  .card{ min-height:98px; padding:5px; }
+  .lbl{ font-size:10px; }
+}
+
+/* Móvil chico (≤480): 4 col */
+@media (max-width:480px){
+  #panelGrid{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .picto{ width:64px; height:64px; }
+  .card{ min-height:92px; padding:4px; }
+  .lbl{ font-size:9.5px; }
+}
+
 
   .card{
     background:var(--card); border:1px solid var(--border); border-radius:10px;
