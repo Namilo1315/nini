@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>PictoComunica Pro — Yo quiero</title>
+  <title>PictoComunica Pro — Yo estoy</title>
   <meta name="theme-color" content="#2563eb"/>
   <link rel="manifest" href="manifest.webmanifest"/>
   <style>
@@ -52,7 +52,7 @@
     .layout>*{min-width:0}
     @media (max-width:768px){ :root{--rail:100%} .layout{grid-template-columns:1fr} }
 
-    /* Sidebar (modo normal, angosta) */
+    /* Sidebar (normal, angosta) */
     .sidebar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;height:max-content;position:sticky;top:calc(var(--topbar) + 10px);min-width:0;overflow:auto;z-index:101;max-height:calc(100vh - var(--topbar) - 20px)}
     .sectionTitle{margin:6px 0 8px;color:var(--muted);font-weight:900;font-size:12px;letter-spacing:.3px}
     .seclist{display:flex;flex-direction:column;gap:8px}
@@ -61,8 +61,8 @@
     .chip .ico{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px}
     .c1{background:var(--chip1)}.c2{background:var(--chip2)}.c3{background:var(--chip3)}.c4{background:var(--chip4)}.c5{background:var(--chip5)}.c6{background:var(--chip6)}.c7{background:var(--chip7)}.c8{background:var(--chip8)}
 
-    /* Drawer para TODAS las pantallas */
-    body.drawerMode .layout{ grid-template-columns:1fr; } /* pictos a ancho completo */
+    /* Drawer en TODAS las pantallas (aprovechar ancho) */
+    body.drawerMode .layout{ grid-template-columns:1fr; }
     body.drawerMode .sidebar{
       position:fixed; left:0; top:var(--topbar); bottom:0; width:var(--drawer-w);
       transform:translateX(-100%); transition:transform .25s ease;
@@ -72,10 +72,8 @@
 
     .main{min-height:60vh;min-width:0}
 
-    /* ===== YO QUIERO ===== */
+    /* ===== YO ESTOY (emociones) ===== */
     .wrap{max-width:1100px;width:95%;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:0 0 20px rgba(0,0,0,.06)}
-
-    /* FILA FIJA DE 3 PICTOGRAMAS */
     .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
 
     .picto{
@@ -85,23 +83,20 @@
     }
     .picto:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
     .picto img{width:clamp(64px,18vw,140px);height:clamp(64px,18vw,140px);object-fit:contain}
-    .picto .lbl{font-weight:900;font-size:clamp(.85rem,2.8vw,1rem);color:#000;text-align:center}
+    .picto .lbl{font-weight:800;font-size:clamp(.75rem,2.8vw,1rem);color:#000;text-align:center}
 
     /* Marco “página” con flip para la 3ª imagen */
     .page{perspective:1000px}
     .page-inner{transform-style:preserve-3d;transition:transform .6s ease}
     .page.flip .page-inner{transform:rotateY(-180deg)}
 
-    /* Controles principales */
+    /* Controles */
     .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 10px}
     .btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer}
     .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
     .btn.accent{background:var(--accent);color:#063e2f;border-color:var(--accent)}
-    .btn.ghost{background:transparent}
 
-    /* === SIN mini-controles: se removieron hablar/auto/segundos === */
-
-    /* Grilla de opciones pequeña + colores lindos */
+    /* Grilla de opciones + colores */
     .options{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px;margin-top:15px}
     @media (max-width:900px){.options{grid-template-columns:repeat(5,1fr)}}
     @media (max-width:600px){.options{grid-template-columns:repeat(4,1fr)}}
@@ -115,19 +110,18 @@
     .opt:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
     .opt[data-active="true"]{outline:3px solid var(--focus)}
 
-    /* cuadrito de color detrás de la imagen */
     .opt .imgwrap{
       width:56px;height:56px;border-radius:10px;border:1px solid var(--border);
       display:grid;place-items:center;overflow:hidden;
     }
     .opt img{width:100%;height:100%;object-fit:contain;pointer-events:none}
-    .opt .cap{font-weight:800;font-size:.72rem;color:#000;text-align:center;line-height:1.05}
+    .opt .cap{font-weight:800;font-size:.72rem;color:#000;text-align:center;line-height:1.0}
     @media (max-width:768px){
       .opt .imgwrap{width:50px;height:50px}
-      .opt .cap{font-size:.75rem}
+      .opt .cap{font-size:.65rem}
     }
 
-    /* Paleta “como los otros” */
+    /* Paleta de fondos lindos */
     .bg-blue-pastel   { background-color:#7ec1e4; }
     .bg-yellow-light  { background-image:linear-gradient(45deg,#FFD93D,#FFB347); }
     .bg-light-green   { background-color:#72cf44; }
@@ -150,7 +144,7 @@
     .radio-row label{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--border);border-radius:999px;cursor:pointer;font-size:12px;font-weight:700}
     .drawer .foot{margin-top:auto;padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px}
 
-    /* Toggles SIEMPRE visibles */
+    /* Botones laterales */
     .toggle{
       position:fixed; top:50%; transform:translateY(-50%);
       z-index:1001; background:var(--primary); color:#fff; border:none; border-radius:10px 0 0 10px;
@@ -161,14 +155,14 @@
     .toggle span{display:block}
   </style>
 </head>
-<body class="drawerMode"><!-- drawerMode para aprovechar ancho siempre -->
+<body class="drawerMode">
 
   <!-- TOPBAR -->
   <div class="topbar" role="banner">
     <div class="toprow">
       <div class="brand"><div class="logo">PC</div> PictoComunica</div>
       <div class="spacer"></div>
-      <button class="topbtn primary" aria-label="Reproducir frase" id="playTop">QUIERO</button>
+      <button class="topbtn primary" aria-label="Reproducir frase" id="playTop">EMOCIONES</button>
       <div class="spacer"></div>
     </div>
   </div>
@@ -181,6 +175,7 @@
       <div class="seclist" id="secList">
         <a class="chip" href="index.html"><div class="ico c1">🏠</div> Panel</a>
         <a class="chip" href="yoquiero.html"><div class="ico c5">❤️</div> Yo quiero</a>
+        <a class="chip" href="yoestoy.html"><div class="ico c5">😊</div> Yo estoy</a>
         <a class="chip" href="rutina.html"><div class="ico c5">🗓️</div> Rutinas</a>
         <a class="chip" href="numeros.html"><div class="ico c7">🔢</div> Números</a>
         <a class="chip" href="letras.html"><div class="ico c6">🔤</div> Letras</a>
@@ -189,10 +184,9 @@
         <a class="chip" href="juego.html"><div class="ico c2">🎮</div> Juego</a>
       </div>
     </aside>
-  
+
     <!-- CONTENIDO -->
     <section class="main">
-      <!-- Controles -->
       <div class="controls">
         <button class="btn primary" id="playBtn" type="button">▶️ Reproducir</button>
         <button class="btn" id="nextBtn" type="button">➡️ Siguiente</button>
@@ -208,17 +202,17 @@
             <div class="lbl">YO</div>
           </div>
 
-          <!-- QUIERO -->
-          <div class="picto" id="pquiero" data-role="fixed">
-            <img src="./imagenes/portada/quiero.png" alt="Quiero">
-            <div class="lbl">QUIERO</div>
+          <!-- ESTOY -->
+          <div class="picto" id="pestoy" data-role="fixed">
+            <img src="./imagenes/portada/estar.png" alt="Estoy">
+            <div class="lbl">ESTOY</div>
           </div>
 
-          <!-- DINÁMICO -->
+          <!-- DINÁMICO (emoción) -->
           <div class="page" id="page">
             <div class="picto page-inner" id="pdyn">
-              <img id="dynImg" src="./imagenes/portada/bano.png" alt="Ir al baño">
-              <div class="lbl" id="dynLbl">IR AL BAÑO</div>
+              <img id="dynImg" src="./imagenes/sentimientos/contento.png" alt="Feliz">
+              <div class="lbl" id="dynLbl">FELIZ</div>
             </div>
           </div>
         </div>
@@ -270,7 +264,7 @@
   </aside>
 
   <script>
-    // ===== Drawer / Secciones
+    /* ===== Drawer / Secciones ===== */
     const sidebar     = document.getElementById('sidebar');
     const leftToggle  = document.getElementById('leftToggle');
     const rightToggle = document.getElementById('rightToggle');
@@ -285,7 +279,7 @@
     closeDrawer?.addEventListener('click', ()=>{ drawer.classList.remove('open'); rightToggle.setAttribute('aria-expanded','false'); if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
     secList?.addEventListener('click', (ev)=>{ const link = ev.target.closest('a.chip'); if(!link) return; if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
 
-    // ===== Voz + Tema
+    /* ===== Voz + Tema (igual que tus otras pantallas) ===== */
     (function(){
       const voiceSelect = document.getElementById('voiceSelect');
       const rateEl  = document.getElementById('rate');
@@ -337,7 +331,6 @@
         pitchEl?.addEventListener(evt,()=>{ SpeechEngine.opts.pitch  = clamp(pitchEl.value,0.8,1.2); store.set({pitch:SpeechEngine.opts.pitch}); });
         volEl?.addEventListener(evt,  ()=>{ SpeechEngine.opts.volume = clamp(volEl.value,0.1,1.0); store.set({volume:SpeechEngine.opts.volume}); });
       });
-
       voiceSelect?.addEventListener('change', ()=>{ SpeechEngine.opts.voiceURI = voiceSelect.value; store.set({voiceURI:voiceSelect.value}); });
 
       if('speechSynthesis' in window){
@@ -357,33 +350,45 @@
       });
     })();
 
-    // ===== LÓGICA "YO QUIERO"
+    /* ===== LÓGICA "YO ESTOY" con tus imágenes ===== */
     const dynImg = document.getElementById('dynImg');
     const dynLbl = document.getElementById('dynLbl');
     const page   = document.getElementById('page');
     const pdyn   = document.getElementById('pdyn');
     const pyo    = document.getElementById('pyo');
-    const pquiero= document.getElementById('pquiero');
+    const pestoy = document.getElementById('pestoy');
     const playBtn= document.getElementById('playBtn');
     const playTop= document.getElementById('playTop');
     const nextBtn= document.getElementById('nextBtn');
     const randBtn= document.getElementById('randBtn');
     const optionsBox = document.getElementById('options');
 
+    // Mismo orden y rutas que tu lista
     const options = [
-      { txt:'ABRAZOS',      img:'./imagenes/portada/abrazo.png' },
-      { txt:'IR AL BAÑO',  img:'./imagenes/portada/bano.png' },
-      { txt:'JUGAR',       img:'./imagenes/portada/jugar.png' },    
-      { txt:'AGUA',        img:'./imagenes/portada/agua.png' },
-      { txt:'MAMÁ',        img:'./imagenes/familia/mama.png' },
-      { txt:'PAPÁ',        img:'./imagenes/familia/papa.png' },
-      { txt:'DORMIR',      img:'./imagenes/portada/dormir.png' },
-      { txt:'COMER',       img:'./imagenes/portada/comer.png' },
-      { txt:'GALLETAS',    img:'./imagenes/portada/galletas.png' },
-      { txt:'FRUTAS',      img:'./imagenes/portada/frutas.png' }
+      { txt:'FELIZ',             img:'./imagenes/sentimientos/contento.png' },
+      { txt:'ENOJADO',           img:'./imagenes/sentimientos/enfado.png' },
+      { txt:'CONTENTO',      img:'./imagenes/sentimientos/emocionado.png' },
+      { txt:'TRISTE',            img:'./imagenes/sentimientos/llorar.png' },
+      { txt:'ENAMORADO',         img:'./imagenes/sentimientos/enamorado.png' },
+      { txt:'CON ASCO',          img:'./imagenes/sentimientos/asco.png' },
+      { txt:'ANSIOSO',           img:'./imagenes/sentimientos/ansioso.png' },
+      { txt:'AVERGONZADO',       img:'./imagenes/sentimientos/avergonzar.png' },
+      { txt:'CONFUNDIDO',        img:'./imagenes/sentimientos/confusion.png' },
+      { txt:'ABURRIDO',          img:'./imagenes/sentimientos/aburrimiento.png' },
+      
+      { txt:'ASUSTADO',          img:'./imagenes/sentimientos/tener miedo.png' },
+     
+      { txt:'DIVERTIDO',         img:'./imagenes/sentimientos/divertir.png' },
+      { txt:'SATURADO',          img:'./imagenes/sentimientos/saturado.png' },
+      { txt:'SORPRENDIDO',       img:'./imagenes/sentimientos/sorpresa.png' },
+      { txt:'ENVIDIOSO',         img:'./imagenes/sentimientos/envidia.png' },
+      { txt:'TE AMO',            img:'./imagenes/portada/amar.png' },
+      { txt:'MAREADO',           img:'./imagenes/sentimientos/mareado.png' },
+      { txt:'CANSADO',           img:'./imagenes/sentimientos/cansado.png' },
+      { txt:'ENCANTADO',         img:'./imagenes/sentimientos/encantado.png' },
+      { txt:'ORGULLOSO DE MI',   img:'./imagenes/sentimientos/orgulloso.png' }
     ];
 
-    // Paleta de clases de color para las opciones
     const palette = [
       'bg-blue-pastel','bg-yellow-light','bg-light-green','bg-orange',
       'bg-mint','bg-light-purple','bg-turquoise','bg-pink-pastel','bg-light-blue','btn-dont-want'
@@ -405,7 +410,7 @@
       if(r === idx) r = (r+1) % options.length;
       setOption(r);
     }
-    function phrase(){ return `YO QUIERO ${options[idx].txt}`; }
+    function phrase(){ return `YO ESTOY ${options[idx].txt}`; }
     function speakPhrase(){ if(typeof window.speak==='function') window.speak(phrase()); }
 
     function highlightActive(){
@@ -442,17 +447,18 @@
       highlightActive();
     }
 
-    // Preload
+    // Preload de imágenes
     (function preload(){ options.forEach(o=>{ const im=new Image(); im.src=o.img; }); })();
 
-    // eventos
-    [pdyn, pyo, pquiero].forEach(el => el.addEventListener('click', ()=>{}));
+    // Tocar pictos superiores: no hace nada extra
+    [pdyn, pyo, pestoy].forEach(el => el.addEventListener('click', ()=>{}));
+    // Botones
     playBtn.addEventListener('click', speakPhrase);
     playTop.addEventListener('click', speakPhrase);
     nextBtn.addEventListener('click', next);
     randBtn.addEventListener('click', randomOption);
 
-    // init
+    // Init
     buildOptions();
     setOption(idx);
   </script>

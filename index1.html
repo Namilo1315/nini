@@ -107,10 +107,10 @@
 
   /* Desktop (≥1200): 12 col */
   #panelGrid{ grid-template-columns:repeat(12,minmax(0,1fr)); }
-  .card{ background:var(--card); border:1px solid var(--border); border-radius:10px; min-height:96px; padding:5px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; }
-  .picto{ width:76px; height:76px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }
+  .card{ background:var(--card); border:0px solid var(--border); border-radius:10px; min-height:96px; padding:2px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; }
+  .picto{ width:96px; height:96px; border-radius:8px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }
   .picto img{ width:100%; height:100%; object-fit:contain }
-  .lbl{ font-size:10.5px; line-height:1.1; font-weight:800; color:var(--text) }
+  .lbl{ font-size:10.5px; line-height:1.0; font-weight:800; color:var(--text) }
 
   /* Tablet (768–1199): 12 col (respetado) */
   @media (min-width:768px) and (max-width:1199px){
@@ -146,7 +146,7 @@
   .picto.bg-blue-pastel   { background-color:#7ec1e4; }
   .picto.bg-yellow-light  { background-image:linear-gradient(45deg,#FFD93D,#FFB347); }
   .picto.bg-green-pastel  { background-color:#43fb55; }
-  .picto.bg-orange        { background-color:#f6ba85; }
+  .picto.bg-orange        { background-color:#fbb578; }
   .picto.bg-pink-pastel   { background-color:#f4878f; }
   .picto.bg-light-blue    { background-color:#48b4cf; }
   .picto.bg-light-green   { background-color:#72cf44; }
