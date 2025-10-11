@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PictoComunica Pro — Autorregulación</title>
+  <meta name="theme-color" content="#2563eb"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+
+  <style>
+    :root{
+      --bg:#ffffff; --card:#ffffff; --text:#0b1220; --muted:#475569;
+      --primary:#2563eb; --accent:#10b981; --border:#e2e8f0; --focus:#93c5fd;
+      --topbar:60px; --rail:180px; --gap:10px;
+      --chip1:#e0f2fe; --chip2:#f1f5f9; --chip3:#fff7ed; --chip4:#ecfeff;
+      --chip5:#fef3c7; --chip6:#fce7f3; --chip7:#f0fdf4; --chip8:#ede9fe;
+      --shadow:0 5px 15px rgba(0,0,0,.08);
+      --drawer-w: clamp(180px, 24vw, 240px);
+    }
+    [data-theme="dark"]{
+      --bg:#0f172a; --card:#0b1220; --text:#f8fafc; --muted:#cbd5e1;
+      --primary:#60a5fa; --accent:#22c55e; --border:#1f2937; --focus:#60a5fa;
+      --chip1:#0b3a5e; --chip2:#0f172a; --chip3:#3b2f1a; --chip4:#063a3a;
+      --chip5:#3a2d09; --chip6:#4a1030; --chip7:#102a12; --chip8:#231942;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);
+         font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; overflow-x:hidden}
+
+    /* Topbar (igual que el resto) */
+    .topbar{
+      position:fixed; inset:0 0 auto 0; height:var(--topbar);
+      z-index:100; background:linear-gradient(90deg,var(--primary),#1e3a8a);
+      color:#fff; display:flex; align-items:center; box-shadow:0 2px 8px rgb(0 0 0/12%);
+    }
+    .toprow{max-width:1400px; margin:0 auto; width:100%; padding:8px 12px; display:flex; gap:8px; align-items:center}
+    .brand{display:flex; gap:10px; align-items:center; font-weight:900}
+    .logo{width:36px;height:36px;border-radius:10px;background:#fff;color:#1e3a8a;display:grid;place-items:center;font-weight:900}
+    .topbtn{border:none;border-radius:10px;background:rgb(255 255 255 / 14%); padding:10px 14px; color:#fff; font-weight:800; cursor:pointer; white-space:nowrap}
+    .topbtn.primary{background:rgb(255 255 255 / 18%)}
+    .spacer{flex:1}
+
+    /* Layout base */
+    .layout{
+      max-width:1400px; margin: calc(var(--topbar) + 12px) auto 14px;
+      padding: 0 10px; display:grid; grid-template-columns:var(--rail) 1fr; gap:var(--gap);
+    }
+    .layout > * { min-width:0; }
+    @media (max-width:768px){ :root{ --rail:100% } .layout{ grid-template-columns:1fr } }
+
+    /* Sidebar */
+    .sidebar{
+      background:var(--card); border:1px solid var(--border); border-radius:14px; padding:10px;
+      height:max-content; position: sticky; top: calc(var(--topbar) + 10px);
+      min-width:0; overflow:auto; z-index:101;
+      max-height: calc(100vh - var(--topbar) - 20px);
+    }
+    .sectionTitle{margin:6px 0 8px; color:var(--muted); font-weight:900; font-size:12px; letter-spacing:.3px}
+    .seclist{display:flex; flex-direction:column; gap:8px}
+    .chip{
+      width:100%; display:grid; grid-template-columns:24px 1fr; gap:8px; align-items:center;
+      padding:8px 10px; border-radius:12px; border:1px solid var(--border); background:var(--card);
+      cursor:pointer; font-weight:900; font-size:12px; transition:transform .06s ease;
+      text-decoration:none; color:inherit;
+    }
+    .chip:hover{ transform:translateY(-1px) }
+    .chip .ico{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px}
+    .c1{ background:var(--chip1) } .c2{ background:var(--chip2) } .c3{ background:var(--chip3) } .c4{ background:var(--chip4) }
+    .c5{ background:var(--chip5) } .c6{ background:var(--chip6) } .c7{ background:var(--chip7) } .c8{ background:var(--chip8) }
+
+    /* Sidebar como drawer en móvil */
+    @media (max-width:768px){
+      .sidebar{
+        position:fixed; left:0; top:var(--topbar); bottom:0; width:var(--drawer-w);
+        transform:translateX(-100%); transition:transform .25s ease;
+        box-shadow:2px 0 18px rgb(0 0 0/18%); border-radius:0 12px 12px 0;
+      }
+      .sidebar.open{ transform:translateX(0) }
+    }
+
+    .main{min-height:60vh; min-width:0}
+
+    /* Contenido */
+    .wrap{max-width:900px;width:95%;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:0 0 20px rgba(0,0,0,.06)}
+    .title{display:flex;align-items:center;gap:10px;margin:2px 2px 10px;font-weight:900;font-size:18px;color:var(--text)}
+
+    .grid{display:grid;gap:10px}
+    #autoGrid{grid-template-columns:repeat(1, minmax(0,1fr));}
+
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      min-height:128px; padding:14px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
+      box-shadow:var(--shadow); transition:transform .1s ease, box-shadow .1s ease; cursor:pointer;
+    }
+    .card:hover{ transform:translateY(-2px) }
+
+    .picto{ width:90px; height:90px; border-radius:12px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; overflow:hidden }
+    .picto img{ width:100%; height:100%; object-fit:contain }
+    .lbl{ font-size:13px; line-height:1.1; font-weight:900; color:var(--text) }
+
+    /* Drawer Config (sólo visual; no usamos voz aquí) */
+    .drawer{position:fixed;top:var(--topbar);right:0;width:320px;height:calc(100% - var(--topbar));background:var(--card);border-left:1px solid var(--border);box-shadow:-6px 0 24px rgb(0 0 0 / 10%);transform:translateX(100%);transition:transform .25s ease;z-index:99;display:flex;flex-direction:column}
+    .drawer.open{transform:translateX(0)}
+    .drawer h3{margin:12px;font-size:16px}
+    .drawer .content{padding:0 12px 12px;overflow:auto;display:grid;gap:10px}
+    .ctrl label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:700}
+    .radio-row{display:flex;flex-wrap:wrap;gap:8px}
+    .radio-row label{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--border);border-radius:999px;cursor:pointer;font-size:12px;font-weight:700}
+    .drawer .foot{margin-top:auto;padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer}
+    .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .btn.ghost{background:transparent}
+
+    /* Toggles laterales */
+    .toggle{
+      position:fixed; top:15%; transform:translateY(-50%);
+      z-index:1001; background:var(--primary); color:#fff; border:none; border-radius:10px 0 0 10px;
+      width:30px; height:40px; cursor:pointer; box-shadow:-2px 2px 10px rgb(0 0 0 / 18%); font-size:16px; font-weight:900;
+    }
+    .toggle.right{right:max(6px,env(safe-area-inset-right))}
+    .toggle.left{left:max(6px,env(safe-area-inset-left));border-radius:0 10px 10px 0;display:block}
+    .toggle span{display:block}
+
+    /* ===== Modal de Respiración (relajado) ===== */
+    .modal{ position:fixed; inset:0; display:none; place-items:center; background:linear-gradient(180deg, rgba(37,99,235,.18), rgba(16,185,129,.14)); z-index:900; backdrop-filter: blur(2px); }
+    .modal.open{ display:grid }
+    .sheet{
+      width:min(560px, 96vw); max-height:86vh; overflow:hidden;
+      background:linear-gradient(180deg,#ffffff,#f8fbff);
+      border:1px solid var(--border); border-radius:16px; padding:16px 16px 20px;
+      box-shadow:0 12px 40px rgb(0 0 0 / 30%);
+    }
+    .sheetHead{ display:flex; align-items:center; gap:10px; margin-bottom:8px }
+    .sheetHead h3{ margin:0; font-size:18px; font-weight:900 }
+    .closeX{ margin-left:auto; border:1px solid var(--border); background:var(--card); border-radius:10px; padding:6px 10px; cursor:pointer; font-weight:800 }
+
+    /* Zona respiración */
+    .calmZone{
+      display:grid; place-items:center; padding:10px 0 4px;
+    }
+    .orb{
+      width:240px; height:240px; border-radius:50%;
+      background: radial-gradient( circle at 30% 30%, rgb(99, 101, 241), rgba(99, 101, 241, 0.804) 40%, rgba(59,130,246,.35) 70%, rgba(29, 79, 216, 0.771) 100% );
+      box-shadow: 0 10px 35px rgba(14, 14, 14, 0.35), inset 0 0 30px rgba(48, 41, 41, 0.776);
+      transform: scale(1);
+      animation: none;
+    }
+    .orb.run{
+      animation: breathe 8s ease-in-out infinite; /* suave, sin contar */
+    }
+    @keyframes breathe{
+      0%  { transform: scale(1);    filter:saturate(.9) blur(0px);   }
+      50% { transform: scale(1.12); filter:saturate(1.05) blur(.3px);}
+      100%{ transform: scale(1);    filter:saturate(.9) blur(0px);   }
+    }
+
+    .softNote{
+      text-align:center; color:var(--muted); font-weight:800; margin-top:8px;
+      opacity:.9; letter-spacing:.02em;
+    }
+    .controlsRow{
+      display:flex; gap:8px; justify-content:center; margin-top:12px;
+    }
+
+    /* Botones grandes */
+    .big{
+      padding:10px 16px; border-radius:12px; font-weight:900; border:1px solid var(--border);
+    }
+    .big.primary{ background:var(--primary); color:#fff; border-color:var(--primary); }
+    .big.ghost{ background:transparent; }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar" role="banner">
+    <div class="toprow">
+      <div class="brand"><div class="logo">PC</div> PictoComunica</div>
+      <div class="spacer"></div>
+      <!-- (No usamos voz aquí) -->
+      <button class="topbtn primary" id="openBreath" type="button">🫁 Respirar</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout" role="main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Secciones" id="sidebar">
+      <div class="sectionTitle">Secciones</div>
+      <div class="seclist" id="secList">
+        <a class="chip" href="panel.html"><div class="ico c1">🏠</div> Panel</a>
+        <a class="chip" href="quiero.html"> <div class="ico c5" aria-hidden="true">🤲</div>Yo quiero</a>
+        <a class="chip" href="estoy.html"><div class="ico c5">❤️</div>Me siento</a>
+        <a class="chip" href="rutina.html"><div class="ico c5">🗓️</div> Rutinas</a>
+        <a class="chip" href="numeros.html"><div class="ico c7">🔢</div> Números</a>
+        <a class="chip" href="letras.html"><div class="ico c6">🔤</div> Letras</a>
+        
+        <a class="chip" href="TuPanel.html"><div class="ico c2">⭐</div> Mi Panel</a>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <section class="main">
+      <div class="wrap">
+        <div class="title">🧘 Autorregulación</div>
+
+        <div id="autoGrid" class="grid" aria-label="Autorregulación">
+          <button class="card" id="cardBreath" type="button" aria-label="Respirar">
+           
+            <div class="lbl">RESPIRAR</div>
+            <div style="font-size:12px;color:var(--muted);font-weight:800">Presioná para empezar</div>
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toggles laterales -->
+  <button class="toggle left"  id="leftToggle"  aria-controls="sidebar"      aria-expanded="false" title="Abrir secciones">❯</button>
+  <button class="toggle right" id="rightToggle" aria-controls="configDrawer" aria-expanded="false" title="Abrir configuración">❮</button>
+
+  <!-- Drawer Config (tema, etc.) -->
+  <aside id="configDrawer" class="drawer" aria-label="Configuración">
+    <h3>⚙️ Configuración</h3>
+    <div class="content">
+      <div class="ctrl">
+        <label>Tema</label>
+        <div class="radio-row" id="themeRow">
+          <label><input type="radio" name="theme" value="light" checked> Claro</label>
+          <label><input type="radio" name="theme" value="dark"> Oscuro</label>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="closeDrawer" type="button">Listo</button>
+    </div>
+  </aside>
+
+  <!-- Modal Respirar (lindo/relajado, sin conteos ni voz) -->
+  <div id="modalBreath" class="modal" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="breathTitle">
+      <div class="sheetHead">
+        <h3 id="breathTitle">Respirar</h3>
+        <button class="closeX" id="closeBreath">✕</button>
+      </div>
+
+      <div class="calmZone">
+        <div class="orb" id="orb"></div>
+        <div class="softNote"></div>
+        <div class="controlsRow">
+          <button class="btn big primary" id="startBreath" type="button">Empezar</button>
+          <button class="btn big ghost"   id="pauseBreath" type="button">Pausar</button>
+          <button class="btn big"         id="endBreath"   type="button">Terminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===== Navegación lateral / Config ===== */
+    const sidebar     = document.getElementById('sidebar');
+    const leftToggle  = document.getElementById('leftToggle');
+    const rightToggle = document.getElementById('rightToggle');
+    const drawer      = document.getElementById('configDrawer');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const secList     = document.getElementById('secList');
+
+    function toggleSidebar(ev){ ev?.preventDefault?.(); const open = !sidebar.classList.contains('open'); sidebar.classList.toggle('open', open); leftToggle.setAttribute('aria-expanded', String(open)); }
+    function toggleDrawer(ev){ ev?.preventDefault?.(); const open = !drawer.classList.contains('open'); drawer.classList.toggle('open', open); rightToggle.setAttribute('aria-expanded', String(open)); }
+    leftToggle?.addEventListener('click', toggleSidebar);
+    rightToggle?.addEventListener('click', toggleDrawer);
+    closeDrawer?.addEventListener('click', ()=>{ drawer.classList.remove('open'); rightToggle.setAttribute('aria-expanded','false'); if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); }});
+    secList?.addEventListener('click', (ev)=>{ const link = ev.target.closest('a.chip'); if(!link) return; if (window.matchMedia('(max-width: 768px)').matches){ sidebar.classList.remove('open'); leftToggle.setAttribute('aria-expanded','false'); } });
+
+    // Tema
+    const themeRow = document.getElementById('themeRow');
+    const savedTheme = localStorage.getItem('pc_theme');
+    if(savedTheme){ document.documentElement.setAttribute('data-theme', savedTheme); themeRow?.querySelector(`input[value="${savedTheme}"]`)?.setAttribute('checked','checked'); }
+    themeRow?.addEventListener('change', (e)=>{ const v=e.target.value; document.documentElement.setAttribute('data-theme', v); localStorage.setItem('pc_theme', v); });
+
+    /* ===== Lógica: Respirar (sin voz ni conteos) ===== */
+    const cardBreath   = document.getElementById('cardBreath');
+    const openBreath   = document.getElementById('openBreath');
+    const modalBreath  = document.getElementById('modalBreath');
+    const closeBreath  = document.getElementById('closeBreath');
+    const startBreath  = document.getElementById('startBreath');
+    const pauseBreath  = document.getElementById('pauseBreath');
+    const endBreath    = document.getElementById('endBreath');
+    const orb          = document.getElementById('orb');
+
+    const openModal = ()=>{ modalBreath.classList.add('open'); modalBreath.setAttribute('aria-hidden','false'); };
+    const closeModal= ()=>{ modalBreath.classList.remove('open'); modalBreath.setAttribute('aria-hidden','true'); stopAnim(); };
+
+    function startAnim(){ orb.classList.add('run'); }
+    function stopAnim(){  orb.classList.remove('run'); }
+    let paused=false;
+
+    // botones
+    openBreath?.addEventListener('click', openModal);
+    cardBreath ?.addEventListener('click', openModal);
+    closeBreath?.addEventListener('click', closeModal);
+    modalBreath?.addEventListener('click', (e)=>{ if(e.target===modalBreath) closeModal(); });
+
+    startBreath?.addEventListener('click', ()=>{ startAnim(); paused=false; });
+    pauseBreath?.addEventListener('click', ()=>{
+      if(paused){ startAnim(); paused=false; pauseBreath.textContent='Pausar'; }
+      else{ stopAnim(); paused=true; pauseBreath.textContent='Reanudar'; }
+    });
+    endBreath?.addEventListener('click', closeModal);
+  </script>
+</body>
+</html>
+
